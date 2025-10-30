@@ -1,0 +1,22 @@
+VisualElement {
+}
+
+.main-button {
+    font-size: 32px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    -unity-text-align: middle-center;
+    align-self: center;
+}
+
+.game-hud-text {
+    font-size: 25px;
+}
+
+.title-text {
+    -unity-text-align: upper-center;
+    font-size: 35px;
+    -unity-font-style: bold;
+}
