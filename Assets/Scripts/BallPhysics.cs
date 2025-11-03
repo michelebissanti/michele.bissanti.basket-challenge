@@ -10,22 +10,45 @@ public class BallPhysics : MonoBehaviour
 
     [SerializeField] private float errorMargin = 0.05f;
 
+    private void OnEnable()
+    {
+        InputManager.OnStartDrag += HandleStartDrag;
+        InputManager.OnEndDrag += HandleEndDrag;
+        InputManager.OnDrag += HandleDrag;
+    }
+
+    private void OnDisable()
+    {
+        InputManager.OnStartDrag -= HandleStartDrag;
+        InputManager.OnEndDrag -= HandleEndDrag;
+        InputManager.OnDrag -= HandleDrag;
+    }
+
     private void Start()
     {
         ballRigidbody = GetComponent<Rigidbody>();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            ShootPerfectShot(basketTransform.position);
-        }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            ShootPerfectShot(backboardTransform.position);
-        }
+    private void HandleStartDrag(Vector2 startPosition)
+    {
+        Debug.Log("Drag started at: " + startPosition);
+    }
+
+    private void HandleEndDrag(Vector2 dragVector)
+    {
+        // Convert drag vector to world position
+        Vector3 targetPos = Camera.main.ScreenToWorldPoint(new Vector3(dragVector.x, dragVector.y, Camera.main.transform.position.y));
+
+        ShootPerfectShot(targetPos);
+
+        Debug.Log("Drag ended with vector: " + dragVector);
+    }
+
+    private void HandleDrag(Vector2 currentPosition)
+    {
+        // Optional: Implement visual feedback during drag
+        Debug.Log("Dragging at: " + currentPosition);
     }
 
 
@@ -42,6 +65,8 @@ public class BallPhysics : MonoBehaviour
             ballRigidbody.isKinematic = false;
             ballRigidbody.velocity = Vector3.zero;
             ballRigidbody.AddForce(velocity, ForceMode.Impulse);
+
+            PhysicsUtils.DrawDebugTrajectory(startPos, velocity);
         }
         else
         {

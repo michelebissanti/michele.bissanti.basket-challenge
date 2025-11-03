@@ -14,7 +14,6 @@ public static class PhysicsUtils
     /// <returns>The initial velocity vector to hit the target.</returns>
     public static Vector3 CalculatePerfectShotVelocity(Vector3 start, Vector3 target, float angleInDegrees, float error, out bool foundSolution)
     {
-        // Get gravity (it's a negative value, e.g. -9.81)
         float g = Physics.gravity.y;
 
         // --- Apply error margin to target ---
@@ -58,10 +57,6 @@ public static class PhysicsUtils
         // Calculate tangent of the angle
         float tanTheta = Mathf.Tan(angleInRadians);
 
-        // This is the formula risolta per la velocità orizzontale (vH) al quadrato.
-        // vH^2 = (0.5 * g * x^2) / (y - x * tan(theta))
-        // La derivazione completa è complessa, ma questa è la soluzione.
-
         float numerator = 0.5f * g * x * x;
         float denominator = y - x * tanTheta;
 
@@ -99,5 +94,17 @@ public static class PhysicsUtils
 
         // The total initial velocity is the sum of the components
         return velocityXZ + velocityY;
+    }
+
+    public static void DrawDebugTrajectory(Vector3 start, Vector3 initialVelocity, int steps = 30, float timeStep = 0.1f)
+    {
+        Vector3 previousPoint = start;
+        for (int i = 1; i <= steps; i++)
+        {
+            float t = i * timeStep;
+            Vector3 point = start + initialVelocity * t + 0.5f * Physics.gravity * t * t;
+            Debug.DrawLine(previousPoint, point, Color.red, 1.0f);
+            previousPoint = point;
+        }
     }
 }
