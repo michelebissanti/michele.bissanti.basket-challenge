@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Ball
   - Basket
+  - Ring
+  - Backboard
+  - Ground
   layers:
   - Default
   - TransparentFX

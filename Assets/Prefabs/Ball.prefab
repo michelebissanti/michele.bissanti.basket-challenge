@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1395226499005569148}
   - component: {fileID: 707217961324681683}
   - component: {fileID: 6204120486187005873}
+  - component: {fileID: 6135086672025570804}
   m_Layer: 0
   m_Name: Ball
   m_TagString: Ball
@@ -29,13 +30,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1810672215373723316}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+  m_LocalRotation: {x: -0.7069834, y: 0, z: 0, w: 0.7072302}
   m_LocalPosition: {x: -11.7, y: 10.418, z: 0.009}
-  m_LocalScale: {x: 25, y: 25, z: 25}
+  m_LocalScale: {x: 20, y: 20, z: 20}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -89.98, y: 0, z: 0}
 --- !u!33 &1861633684090055904
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -109,7 +110,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -120,7 +121,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1810672215373723316}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 455dd211697d64e499f96ad1d4a1eb74, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -146,3 +147,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62b7028ff05f761438d4f5088b44f844, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startPosition: {fileID: 0}
+--- !u!114 &6135086672025570804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810672215373723316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fad0b4f87ca85f46a211aaa67fa2552, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  basketTransform: {fileID: 0}
+  backboardTransform: {fileID: 0}
+  shotAngle: 60
