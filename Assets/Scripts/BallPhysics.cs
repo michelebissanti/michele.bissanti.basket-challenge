@@ -8,6 +8,8 @@ public class BallPhysics : MonoBehaviour
 
     [SerializeField] private float shotAngle = 60f;
 
+    [SerializeField] private float errorMargin = 0.05f;
+
     private void Start()
     {
         ballRigidbody = GetComponent<Rigidbody>();
@@ -33,7 +35,7 @@ public class BallPhysics : MonoBehaviour
         Vector3 startPos = ballRigidbody.position;
 
         bool solutionFound;
-        Vector3 velocity = PhysicsUtils.CalculatePerfectShotVelocity(startPos, targetPos, shotAngle, out solutionFound);
+        Vector3 velocity = PhysicsUtils.CalculatePerfectShotVelocity(startPos, targetPos, shotAngle, errorMargin, out solutionFound);
 
         if (solutionFound)
         {

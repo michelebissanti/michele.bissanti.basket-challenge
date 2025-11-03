@@ -3,52 +3,72 @@ using UnityEngine;
 public static class PhysicsUtils
 {
     /// <summary>
-    /// Calcola la velocità iniziale (forza) per lanciare un proiettile
-    /// dal punto di partenza al punto di destinazione, dato un angolo di lancio.
+    /// Calculates the initial velocity (force) to launch a projectile
+    /// from the start point to the target point, given a launch angle.
     /// </summary>
-    /// <param name="start">Posizione di partenza</param>
-    /// <param name="target">Posizione di destinazione</param>
-    /// <param name="angleInDegrees">Angolo di lancio in gradi (rispetto all'orizzonte)</param>
-    /// <param name="foundSolution">Restituisce true se è stata trovata una soluzione, false altrimenti.</param>
-    /// <returns>Il vettore velocità iniziale per colpire il bersaglio.</returns>
-    public static Vector3 CalculatePerfectShotVelocity(Vector3 start, Vector3 target, float angleInDegrees, out bool foundSolution)
+    /// <param name="start">Starting position</param>
+    /// <param name="target">Target position</param>
+    /// <param name="angleInDegrees">Launch angle in degrees (relative to the horizon)</param>
+    /// <param name="error">Error margin (0 = perfect, 0.1 = 10% error, 0.5 = 50% error)</param>
+    /// <param name="foundSolution">Returns true if a solution was found, false otherwise.</param>
+    /// <returns>The initial velocity vector to hit the target.</returns>
+    public static Vector3 CalculatePerfectShotVelocity(Vector3 start, Vector3 target, float angleInDegrees, float error, out bool foundSolution)
     {
-        // Ottieni la gravità (è un valore negativo, es. -9.81)
+        // Get gravity (it's a negative value, e.g. -9.81)
         float g = Physics.gravity.y;
 
-        // --- 1. Separare la distanza in Orizzontale (xz) e Verticale (y) ---
+        // --- Apply error margin to target ---
+        Vector3 adjustedTarget = target;
+        if (error > 0)
+        {
+            // Calculate horizontal distance to scale the error
+            Vector3 deltaForError = target - start;
+            float distance = new Vector3(deltaForError.x, 0, deltaForError.z).magnitude;
 
-        // Vettore di spostamento totale
-        Vector3 delta = target - start;
+            // Apply a random offset proportional to error and distance
+            float errorRadius = error * distance;
+            Vector3 randomOffset = new Vector3(
+                Random.Range(-errorRadius, errorRadius),
+                0, // Don't modify the target's height
+                Random.Range(-errorRadius, errorRadius)
+            );
 
-        // Spostamento sul piano orizzontale (xz)
+            adjustedTarget += randomOffset;
+        }
+
+        // --- 1. Separate distance into Horizontal (xz) and Vertical (y) ---
+
+        // Total displacement vector (use the adjusted target)
+        Vector3 delta = adjustedTarget - start;
+
+        // Displacement on horizontal plane (xz)
         Vector3 deltaXZ = new Vector3(delta.x, 0, delta.z);
 
-        // Distanza orizzontale (magnitudo)
+        // Horizontal distance (magnitude)
         float x = deltaXZ.magnitude;
 
-        // Spostamento verticale (differenza di altezza)
+        // Vertical displacement (height difference)
         float y = delta.y;
 
-        // --- 2. Calcolare la velocità usando la formula del moto parabolico ---
+        // --- 2. Calculate velocity using parabolic motion formula ---
 
-        // Converti l'angolo in radianti
+        // Convert angle to radians
         float angleInRadians = angleInDegrees * Mathf.Deg2Rad;
 
-        // Calcola seno e tangente dell'angolo
+        // Calculate tangent of the angle
         float tanTheta = Mathf.Tan(angleInRadians);
 
-        // Questa è la formula risolta per la velocità orizzontale (vH) al quadrato.
+        // This is the formula risolta per la velocità orizzontale (vH) al quadrato.
         // vH^2 = (0.5 * g * x^2) / (y - x * tan(theta))
         // La derivazione completa è complessa, ma questa è la soluzione.
 
         float numerator = 0.5f * g * x * x;
         float denominator = y - x * tanTheta;
 
-        // Poiché g è negativo, anche il numeratore è negativo.
-        // Affinché la velocità^2 sia positiva, anche il denominatore deve essere negativo.
-        // Se il denominatore è >= 0, il bersaglio è irraggiungibile con questo angolo
-        // (es. è "troppo in alto" o "dietro" la parabola).
+        // Since g is negative, the numerator is also negative.
+        // For velocity^2 to be positive, the denominator must also be negative.
+        // If the denominator is >= 0, the target is unreachable with this angle
+        // (e.g. it's "too high" or "behind" the parabola).
 
         if (denominator >= 0)
         {
@@ -58,26 +78,26 @@ public static class PhysicsUtils
 
         float vH_squared = numerator / denominator;
 
-        // Ora abbiamo la velocità orizzontale (non al quadrato)
+        // Now we have the horizontal velocity (not squared)
         float vH = Mathf.Sqrt(vH_squared);
 
-        // La velocità verticale iniziale è vH * tan(theta)
+        // The initial vertical velocity is vH * tan(theta)
         float vY = vH * tanTheta;
 
-        // --- 3. Combinare le velocità in un Vettore 3D ---
+        // --- 3. Combine velocities into a 3D Vector ---
 
-        // Direzione orizzontale (un vettore lungo 1 che punta verso il target)
+        // Horizontal direction (a unit vector pointing towards the target)
         Vector3 directionXZ = deltaXZ.normalized;
 
-        // Vettore velocità orizzontale
+        // Horizontal velocity vector
         Vector3 velocityXZ = directionXZ * vH;
 
-        // Vettore velocità verticale
+        // Vertical velocity vector
         Vector3 velocityY = Vector3.up * vY;
 
         foundSolution = true;
 
-        // La velocità iniziale totale è la somma delle componenti
+        // The total initial velocity is the sum of the components
         return velocityXZ + velocityY;
     }
 }
