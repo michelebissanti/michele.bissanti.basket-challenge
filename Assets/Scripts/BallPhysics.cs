@@ -5,68 +5,137 @@ public class BallPhysics : MonoBehaviour
     private Rigidbody ballRigidbody;
     [SerializeField] private Transform basketTransform;
     [SerializeField] private Transform backboardTransform;
-
     [SerializeField] private float shotAngle = 60f;
+    [SerializeField] private float perfectShotThreshold = 2.0f;
 
-    [SerializeField] private float errorMargin = 0.05f;
-
-    private void OnEnable()
-    {
-        InputManager.OnStartDrag += HandleStartDrag;
-        InputManager.OnEndDrag += HandleEndDrag;
-        InputManager.OnDrag += HandleDrag;
-    }
-
-    private void OnDisable()
-    {
-        InputManager.OnStartDrag -= HandleStartDrag;
-        InputManager.OnEndDrag -= HandleEndDrag;
-        InputManager.OnDrag -= HandleDrag;
-    }
+    [SerializeField] private float forceMultiplier = 0.02f;
 
     private void Start()
     {
         ballRigidbody = GetComponent<Rigidbody>();
     }
 
-
-    private void HandleStartDrag(Vector2 startPosition)
+    private void OnEnable()
     {
-        Debug.Log("Drag started at: " + startPosition);
+        InputManager.OnEndDrag += HandlePlayerShot;
     }
 
-    private void HandleEndDrag(Vector2 dragVector)
+    private void OnDisable()
     {
-        // Convert drag vector to world position
-        Vector3 targetPos = Camera.main.ScreenToWorldPoint(new Vector3(dragVector.x, dragVector.y, Camera.main.transform.position.y));
-
-        ShootPerfectShot(targetPos);
-
-        Debug.Log("Drag ended with vector: " + dragVector);
+        InputManager.OnEndDrag -= HandlePlayerShot;
     }
 
-    private void HandleDrag(Vector2 currentPosition)
+    // --- Player Shot Handling ---
+
+    /// <summary>
+    /// Called when the player finishes the swipe.
+    /// </summary>
+    private void HandlePlayerShot(Vector2 dragVector)
     {
-        // Optional: Implement visual feedback during drag
-        Debug.Log("Dragging at: " + currentPosition);
+
+        Vector3 playerVelocity = ConvertSwipeToVelocity(dragVector);
+
+        // Calculate perfect velocity towards the basket
+        bool basketSolutionFound;
+        Vector3 perfectBasketVelocity = PhysicsUtils.CalculatePerfectShotVelocity(
+            ballRigidbody.position,
+            basketTransform.position,
+            shotAngle,
+            out basketSolutionFound
+        );
+
+        // Calculate perfect velocity towards the backboard
+        bool backboardSolutionFound;
+        Vector3 perfectBackboardVelocity = PhysicsUtils.CalculatePerfectShotVelocity(
+            ballRigidbody.position,
+            backboardTransform.position,
+            shotAngle,
+            out backboardSolutionFound
+        );
+
+        // Calculate errors for both trajectories
+        float basketError = float.MaxValue;
+        float backboardError = float.MaxValue;
+
+        if (basketSolutionFound)
+        {
+            basketError = Vector3.Distance(playerVelocity, perfectBasketVelocity);
+            Debug.Log($"Basket shot error: {basketError}");
+        }
+
+        if (backboardSolutionFound)
+        {
+            backboardError = Vector3.Distance(playerVelocity, perfectBackboardVelocity);
+            Debug.Log($"Backboard shot error: {backboardError}");
+        }
+
+        // Determine which trajectory to use based on minimum error
+        Vector3 velocityToUse = playerVelocity; // By default use player's velocity
+        float minError = Mathf.Min(basketError, backboardError);
+
+        if (minError < perfectShotThreshold)
+        {
+            if (basketError < backboardError)
+            {
+                velocityToUse = perfectBasketVelocity;
+                Debug.Log("Perfect shot! Using calculated basket velocity.");
+            }
+            else
+            {
+                velocityToUse = perfectBackboardVelocity;
+                Debug.Log("Perfect shot! Using calculated backboard velocity.");
+            }
+        }
+        else
+        {
+            Debug.Log("Imperfect shot. Using player's velocity.");
+        }
+
+        // Launch the ball with the chosen velocity
+        LaunchBall(velocityToUse);
     }
 
-
-    private void ShootPerfectShot(Vector3 targetPos)
+    /// <summary>
+    /// Converts 2D swipe into a 3D launch force.
+    /// </summary>
+    private Vector3 ConvertSwipeToVelocity(Vector2 drag)
     {
+        // Calculate direction towards the basket
+        Vector3 directionToBasket = (basketTransform.position - ballRigidbody.position).normalized;
 
+        // Use swipe magnitude to determine shot strength
+        float swipeMagnitude = drag.magnitude;
+
+        // Use drag.y to control vertical angle/power
+        float verticalInfluence = drag.y * forceMultiplier;
+
+        // Combine direction towards basket with swipe force
+        Vector3 velocity = directionToBasket * swipeMagnitude * forceMultiplier;
+        velocity.y += verticalInfluence; // Add vertical component based on swipe
+
+        return velocity;
+    }
+
+    /// <summary>
+    /// Helper function to physically launch the ball
+    /// </summary>
+    private void LaunchBall(Vector3 velocity)
+    {
+        ballRigidbody.isKinematic = false; // Make sure it's not kinematic
+        ballRigidbody.velocity = Vector3.zero;
+        ballRigidbody.angularVelocity = Vector3.zero;
+        ballRigidbody.AddForce(velocity, ForceMode.Impulse); // Impulse is better than VelocityChange
+    }
+
+    private void LaunchPerfectTestShot(Vector3 targetPos)
+    {
         Vector3 startPos = ballRigidbody.position;
-
         bool solutionFound;
-        Vector3 velocity = PhysicsUtils.CalculatePerfectShotVelocity(startPos, targetPos, shotAngle, errorMargin, out solutionFound);
+        Vector3 velocity = PhysicsUtils.CalculatePerfectShotVelocity(startPos, targetPos, shotAngle, out solutionFound);
 
         if (solutionFound)
         {
-            ballRigidbody.isKinematic = false;
-            ballRigidbody.velocity = Vector3.zero;
-            ballRigidbody.AddForce(velocity, ForceMode.Impulse);
-
-            PhysicsUtils.DrawDebugTrajectory(startPos, velocity);
+            LaunchBall(velocity);
         }
         else
         {

@@ -9,36 +9,16 @@ public static class PhysicsUtils
     /// <param name="start">Starting position</param>
     /// <param name="target">Target position</param>
     /// <param name="angleInDegrees">Launch angle in degrees (relative to the horizon)</param>
-    /// <param name="error">Error margin (0 = perfect, 0.1 = 10% error, 0.5 = 50% error)</param>
     /// <param name="foundSolution">Returns true if a solution was found, false otherwise.</param>
     /// <returns>The initial velocity vector to hit the target.</returns>
-    public static Vector3 CalculatePerfectShotVelocity(Vector3 start, Vector3 target, float angleInDegrees, float error, out bool foundSolution)
+    public static Vector3 CalculatePerfectShotVelocity(Vector3 start, Vector3 target, float angleInDegrees, out bool foundSolution)
     {
         float g = Physics.gravity.y;
 
-        // --- Apply error margin to target ---
-        Vector3 adjustedTarget = target;
-        if (error > 0)
-        {
-            // Calculate horizontal distance to scale the error
-            Vector3 deltaForError = target - start;
-            float distance = new Vector3(deltaForError.x, 0, deltaForError.z).magnitude;
-
-            // Apply a random offset proportional to error and distance
-            float errorRadius = error * distance;
-            Vector3 randomOffset = new Vector3(
-                Random.Range(-errorRadius, errorRadius),
-                0, // Don't modify the target's height
-                Random.Range(-errorRadius, errorRadius)
-            );
-
-            adjustedTarget += randomOffset;
-        }
-
         // --- 1. Separate distance into Horizontal (xz) and Vertical (y) ---
 
-        // Total displacement vector (use the adjusted target)
-        Vector3 delta = adjustedTarget - start;
+        // Total displacement vector
+        Vector3 delta = target - start;
 
         // Displacement on horizontal plane (xz)
         Vector3 deltaXZ = new Vector3(delta.x, 0, delta.z);
@@ -94,17 +74,5 @@ public static class PhysicsUtils
 
         // The total initial velocity is the sum of the components
         return velocityXZ + velocityY;
-    }
-
-    public static void DrawDebugTrajectory(Vector3 start, Vector3 initialVelocity, int steps = 30, float timeStep = 0.1f)
-    {
-        Vector3 previousPoint = start;
-        for (int i = 1; i <= steps; i++)
-        {
-            float t = i * timeStep;
-            Vector3 point = start + initialVelocity * t + 0.5f * Physics.gravity * t * t;
-            Debug.DrawLine(previousPoint, point, Color.red, 1.0f);
-            previousPoint = point;
-        }
     }
 }
