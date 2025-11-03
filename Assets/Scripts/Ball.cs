@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    private bool scored = false;
     private bool ringTouched = false;
     private bool backboardTouched = false;
     private bool groundTouched = false;
@@ -15,8 +14,18 @@ public class Ball : MonoBehaviour
     {
         if (other.CompareTag("Basket"))
         {
-            Debug.Log("Ball entered the basket!");
-            scored = true;
+            if (ringTouched || backboardTouched)
+            {
+                GameManager.Instance.SetStandardScore();
+            }
+            else
+            {
+                GameManager.Instance.SetPerfectScore();
+            }
+
+            ringTouched = false;
+            backboardTouched = false;
+
         }
     }
 
@@ -57,7 +66,6 @@ public class Ball : MonoBehaviour
         transform.position = startPosition.position;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         GetComponent<Rigidbody>().isKinematic = true;
-        scored = false;
         ringTouched = false;
         backboardTouched = false;
     }

@@ -260,7 +260,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 90
+  m_Priority: 0
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
@@ -484,7 +484,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60.000004
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -510,8 +510,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.027784182, y: -0.73987824, z: -0.030627912, w: 0.6714687}
-  m_LocalPosition: {x: 1.86, y: 5.4, z: 1.71}
+  m_LocalRotation: {x: 0.5, y: -0.5, z: 0.5, w: 0.5}
+  m_LocalPosition: {x: 0, y: 45, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -581,7 +581,7 @@ MonoBehaviour:
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
     m_Style: 1
-    m_Time: 2
+    m_Time: 0.5
     m_CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -2121,7 +2121,7 @@ PrefabInstance:
     - target: {fileID: 5473226116614816632, guid: 638128a059dc7704fb74b129cf83b316,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2366,7 +2366,7 @@ PrefabInstance:
     - target: {fileID: 2309693882194445943, guid: fcdb75645da6d944697f6fe705aa4c26,
         type: 3}
       propertyPath: gameDuration
-      value: 10
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 5460536881187144261, guid: fcdb75645da6d944697f6fe705aa4c26,
         type: 3}

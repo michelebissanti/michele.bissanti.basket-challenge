@@ -6,7 +6,7 @@ public class BallPhysics : MonoBehaviour
     [SerializeField] private Transform basketTransform;
     [SerializeField] private Transform backboardTransform;
     [SerializeField] private float shotAngle = 60f;
-    [SerializeField] private float perfectShotThreshold = 2.0f;
+    [SerializeField] private float perfectShotThreshold = 0.5f;
 
     [SerializeField] private float forceMultiplier = 0.02f;
 
@@ -32,6 +32,10 @@ public class BallPhysics : MonoBehaviour
     /// </summary>
     private void HandlePlayerShot(Vector2 dragVector)
     {
+        if (GameManager.Instance.GameState != GameState.Gameplay)
+        {
+            return;
+        }
 
         Vector3 playerVelocity = ConvertSwipeToVelocity(dragVector);
 

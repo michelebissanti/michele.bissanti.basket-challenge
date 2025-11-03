@@ -50,6 +50,16 @@ public class GameManager : Singleton<GameManager>
         OnScoreChanged?.Invoke(score);
     }
 
+    public void SetPerfectScore()
+    {
+        SetScore(3);
+    }
+
+    public void SetStandardScore()
+    {
+        SetScore(2);
+    }
+
     public void SetTimer(float newTime)
     {
         timer = newTime;
