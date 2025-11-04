@@ -469,12 +469,12 @@ Camera:
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 50
+  m_FocalLength: 0.86602545
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
   m_Anamorphism: 0
-  m_SensorSize: {x: 36, y: 24}
+  m_SensorSize: {x: 1, y: 1}
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -1136,6 +1136,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1932976361}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &969260361 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4432618846347365922, guid: a155aba8769d7b34d974afab212d9dbf,
+    type: 3}
+  m_PrefabInstance: {fileID: 421829256303951226}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1015079301
 GameObject:
   m_ObjectHideFlags: 0
@@ -2803,6 +2809,11 @@ PrefabInstance:
       propertyPath: backboardTransform
       value: 
       objectReference: {fileID: 1429775887}
+    - target: {fileID: 6135086672025570804, guid: 695de720bc167f24a8d5c3ec3e524337,
+        type: 3}
+      propertyPath: backboardMaxTransform
+      value: 
+      objectReference: {fileID: 969260361}
     - target: {fileID: 6204120486187005873, guid: 695de720bc167f24a8d5c3ec3e524337,
         type: 3}
       propertyPath: startPosition
