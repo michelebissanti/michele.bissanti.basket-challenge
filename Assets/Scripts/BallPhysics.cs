@@ -5,6 +5,7 @@ public class BallPhysics : MonoBehaviour
     private Rigidbody ballRigidbody;
     [SerializeField] private Transform basketTransform;
     [SerializeField] private Transform backboardTransform;
+    [SerializeField] private Transform backboardMaxTransform;
     [SerializeField] private float shotAngle = 60f;
     [SerializeField] private float perfectShotThreshold = 0.5f;
 
@@ -107,7 +108,18 @@ public class BallPhysics : MonoBehaviour
         // Calculate direction towards the basket
         Vector3 directionToBasket = (basketTransform.position - ballRigidbody.position).normalized;
 
-        // Use swipe magnitude to determine shot strength
+        // Calculate maximum velocity (backboard shot)
+        bool backboardSolutionFound;
+        Vector3 maxVelocity = PhysicsUtils.CalculatePerfectShotVelocity(
+            ballRigidbody.position,
+            backboardMaxTransform.position,
+            shotAngle,
+            out backboardSolutionFound
+        );
+
+        float maxSpeed = backboardSolutionFound ? maxVelocity.magnitude : 20f; // Fallback to 20 if no solution
+
+        // Use swipe magnitude to determine shot strength (0 to 1 range based on screen)
         float swipeMagnitude = drag.magnitude;
 
         // Use drag.y to control vertical angle/power
@@ -115,7 +127,14 @@ public class BallPhysics : MonoBehaviour
 
         // Combine direction towards basket with swipe force
         Vector3 velocity = directionToBasket * swipeMagnitude * forceMultiplier;
-        velocity.y += verticalInfluence; // Add vertical component based on swipe
+        velocity.y += verticalInfluence;
+
+        // Clamp velocity to maximum speed (backboard shot)
+        if (velocity.magnitude > maxSpeed)
+        {
+            velocity = velocity.normalized * maxSpeed;
+            Debug.Log("Clamped shot to maximum backboard velocity.");
+        }
 
         return velocity;
     }
