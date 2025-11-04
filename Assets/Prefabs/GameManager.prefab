@@ -46,3 +46,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameState: 0
   score: 0
+  gameDuration: 60
+  timer: 60
+  playerSpawnPointParent: {fileID: 0}

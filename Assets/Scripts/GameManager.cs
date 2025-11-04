@@ -29,9 +29,16 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private float timer = 60f;
     public float Timer => timer;
 
+    [SerializeField] private GameObject playerSpawnPointParent;
+    private Transform[] playerSpawnPoints;
+    public static event Action<Transform> positionReset;
+
     void Start()
     {
         SetState(GameState.MainMenu);
+
+        playerSpawnPoints = playerSpawnPointParent.GetComponentsInChildren<Transform>();
+        playerSpawnPoints = playerSpawnPoints[1..];
     }
 
     public void SetState(GameState newState)
@@ -74,6 +81,7 @@ public class GameManager : Singleton<GameManager>
         SetScore(0);
         SetTimer(gameDuration);
         StartCoroutine(TimerCountdown());
+        BallOutOfPlay();
         SetState(GameState.Gameplay);
     }
 
@@ -90,5 +98,11 @@ public class GameManager : Singleton<GameManager>
     public void EndGame()
     {
         SetState(GameState.Reward);
+    }
+
+    public void BallOutOfPlay()
+    {
+        Transform spawnTransform = playerSpawnPoints[UnityEngine.Random.Range(0, playerSpawnPoints.Length)];
+        positionReset?.Invoke(spawnTransform);
     }
 }

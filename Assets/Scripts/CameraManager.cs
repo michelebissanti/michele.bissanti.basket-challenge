@@ -9,14 +9,18 @@ public class CameraManager : Singleton<CameraManager>
     [SerializeField] private Cinemachine.CinemachineVirtualCamera gameplayCamera;
     [SerializeField] private Cinemachine.CinemachineVirtualCamera rewardCamera;
 
+    public static Action<Transform> GamePlayCameraReady;
+
     private void OnEnable()
     {
         GameManager.OnGameStateChanged += HandleGameStateChanged;
+        GameManager.positionReset += ChangeCameraGameplay;
     }
 
     private void OnDisable()
     {
         GameManager.OnGameStateChanged -= HandleGameStateChanged;
+        GameManager.positionReset -= ChangeCameraGameplay;
     }
 
     public void SwitchToMenuCamera()
@@ -56,6 +60,13 @@ public class CameraManager : Singleton<CameraManager>
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
+
+    private void ChangeCameraGameplay(Transform newTransform)
+    {
+        gameplayCamera.transform.position = newTransform.position;
+        gameplayCamera.transform.rotation = newTransform.rotation;
+        GamePlayCameraReady?.Invoke(gameplayCamera.transform);
     }
 
 }
