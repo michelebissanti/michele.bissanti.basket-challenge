@@ -81,8 +81,6 @@ public class Ball : MonoBehaviour
 
         // place the ball in front of the gameplay camera with an offset
         transform.position = cameraTransform.position + cameraTransform.forward * cameraOffset.z + cameraTransform.up * cameraOffset.y + cameraTransform.right * cameraOffset.x;
-
-        rb.velocity = Vector3.zero;
         ringTouched = false;
         backboardTouched = false;
     }

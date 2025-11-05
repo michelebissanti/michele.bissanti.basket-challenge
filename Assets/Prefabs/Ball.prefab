@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.7069834, y: 0, z: 0, w: 0.7072302}
   m_LocalPosition: {x: -11.7, y: 10.418, z: 0.009}
-  m_LocalScale: {x: 20, y: 20, z: 20}
+  m_LocalScale: {x: 23, y: 23, z: 23}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62b7028ff05f761438d4f5088b44f844, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startPosition: {fileID: 0}
+  cameraOffset: {x: 0, y: -0.4, z: 2}
 --- !u!114 &6135086672025570804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,6 +162,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   basketTransform: {fileID: 0}
   backboardTransform: {fileID: 0}
+  backboardMaxTransform: {fileID: 0}
   shotAngle: 60
   perfectShotThreshold: 0.5
-  forceMultiplier: 0.02
+  forceMultiplier: 0.01

@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
 public class BallPhysics : MonoBehaviour
 {
     private Rigidbody ballRigidbody;
+    public static Action ballLaunched;
     [SerializeField] private Transform basketTransform;
     [SerializeField] private Transform backboardTransform;
     [SerializeField] private Transform backboardMaxTransform;
@@ -148,6 +150,7 @@ public class BallPhysics : MonoBehaviour
         ballRigidbody.velocity = Vector3.zero;
         ballRigidbody.angularVelocity = Vector3.zero;
         ballRigidbody.AddForce(velocity, ForceMode.Impulse); // Impulse is better than VelocityChange
+        ballLaunched?.Invoke();
     }
 
     private void LaunchPerfectTestShot(Vector3 targetPos)

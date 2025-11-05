@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -15,8 +16,9 @@ public class UIManager : Singleton<UIManager>
     private Button _returnToMenuButton;
 
 
-    void Awake()
+    public override void Awake()
     {
+        base.Awake();
         var root = GetComponent<UIDocument>().rootVisualElement;
 
         _mainMenuContainer = root.Q<VisualElement>("main-menu-container");
