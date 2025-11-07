@@ -5,13 +5,13 @@
         <ui:Button text="Play" parse-escape-sequences="true" display-tooltip-when-elided="true" name="play-button" class="main-button" />
     </ui:VisualElement>
     <ui:VisualElement name="in-game-container" style="flex-grow: 1; display: none;">
-        <ui:VisualElement name="RowInGame" style="flex-grow: 1; flex-direction: row; flex-wrap: nowrap; justify-content: space-around;">
-            <ui:Label tabindex="-1" text="Time: 60" parse-escape-sequences="true" display-tooltip-when-elided="true" name="timer-label" class="game-hud-text" />
-            <ui:Label tabindex="-1" text="Score: 0" parse-escape-sequences="true" display-tooltip-when-elided="true" name="score-label" class="game-hud-text" style="-unity-text-align: upper-center;" />
+        <ui:VisualElement name="RowInGame" style="flex-grow: 1; flex-direction: row; flex-wrap: nowrap; justify-content: space-between; margin-top: 16px; margin-right: 16px; margin-bottom: 16px; margin-left: 16px;">
+            <ui:Label tabindex="-1" text="Time&#10;60" parse-escape-sequences="true" display-tooltip-when-elided="true" name="timer-label" enable-rich-text="true" class="game-hud-text" style="align-items: stretch; justify-content: flex-start; align-self: auto; -unity-text-align: upper-center;" />
+            <ui:Label tabindex="-1" text="Score&#10;0" parse-escape-sequences="true" display-tooltip-when-elided="true" name="score-label" class="game-hud-text" style="-unity-text-align: upper-center;" />
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="reward-container" style="flex-grow: 1; display: none; align-items: center; justify-content: center; align-self: center;">
-        <ui:Label tabindex="-1" text="Reward Screen" parse-escape-sequences="true" display-tooltip-when-elided="true" name="final-score-label" class="game-hud-text" />
+        <ui:Label tabindex="-1" text="Reward Screen" parse-escape-sequences="true" display-tooltip-when-elided="true" name="final-score-label" class="game-hud-text" style="font-size: 80px;" />
         <ui:Button text="Play again" parse-escape-sequences="true" display-tooltip-when-elided="true" name="play-again-button" class="main-button" />
         <ui:Button text="Return to menu" parse-escape-sequences="true" display-tooltip-when-elided="true" name="return-to-menu-button" class="main-button" />
     </ui:VisualElement>

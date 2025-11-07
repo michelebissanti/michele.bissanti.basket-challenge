@@ -46,8 +46,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameState: 0
   score: 0
-  gameDuration: 60
-  timer: 60
+  gameDuration: 120
+  timer: 120
   playerSpawnPointParent: {fileID: 0}
   bonusBackboardDuration: 10
   backboardBonuses:

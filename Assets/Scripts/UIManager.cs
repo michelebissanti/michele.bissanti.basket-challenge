@@ -106,12 +106,12 @@ public class UIManager : Singleton<UIManager>
 
     public void UpdateScore(int score)
     {
-        _scoreLabel.text = $"Score: {score}";
+        _scoreLabel.text = $"Score\n{score}";
     }
 
     public void UpdateTimer(float time)
     {
-        _timerLabel.text = $"Time: {time:F0}";
+        _timerLabel.text = $"Time\n{time:F0}";
     }
 
     // --- EVENT HANDLERS ---

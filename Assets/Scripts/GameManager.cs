@@ -1,6 +1,6 @@
 using System;
-using System.Diagnostics.Tracing;
 using UnityEngine;
+using Unity.Collections;
 
 public enum GameState
 {
@@ -44,6 +44,7 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private GameObject playerSpawnPointParent;
     private Transform[] playerSpawnPoints;
+    private Transform currentSpawnPoint;
     public static event Action<Transform> positionReset;
 
     [SerializeField] private float bonusBackboardDuration = 10f;
@@ -55,6 +56,8 @@ public class GameManager : Singleton<GameManager>
     private float backboardBonusTimer = 0f;
     private float nextBackboardBonusTime = 0f;
     private int lastBackboardBonusPoints = 0;
+
+    private bool scoredPoint = false;
 
     void Start()
     {
@@ -78,6 +81,11 @@ public class GameManager : Singleton<GameManager>
         score += pointsToAdd;
 
         OnScoreChanged?.Invoke(score);
+
+        if (scoredPoint == false)
+        {
+            scoredPoint = true;
+        }
     }
 
     private void ResetScore()
@@ -116,13 +124,15 @@ public class GameManager : Singleton<GameManager>
 
     public void StartGame()
     {
-        AddScore(0);
+        ResetScore();
+        ChangeSpawnPoint();
         StopBackboardBonus();
         SetTimer(gameDuration);
         nextBackboardBonusTime = gameDuration - UnityEngine.Random.Range(minBackboardBonusSpawnInterval, maxBackboardBonusSpawnInterval);
         StartCoroutine(TimerCountdown());
         SetState(GameState.Gameplay);
         BallOutOfPlay();
+
     }
 
     private System.Collections.IEnumerator TimerCountdown()
@@ -186,7 +196,25 @@ public class GameManager : Singleton<GameManager>
 
     public void BallOutOfPlay()
     {
-        Transform spawnTransform = playerSpawnPoints[UnityEngine.Random.Range(0, playerSpawnPoints.Length)];
-        positionReset?.Invoke(spawnTransform);
+        if (scoredPoint)
+        {
+            scoredPoint = false;
+            ChangeSpawnPoint();
+        }
+
+        positionReset?.Invoke(currentSpawnPoint);
     }
+
+    private void ChangeSpawnPoint()
+    {
+        Transform newSpawnPoint;
+        do
+        {
+            newSpawnPoint = playerSpawnPoints[UnityEngine.Random.Range(0, playerSpawnPoints.Length)];
+        } while (newSpawnPoint == currentSpawnPoint && playerSpawnPoints.Length > 1);
+
+        currentSpawnPoint = newSpawnPoint;
+
+    }
+
 }
