@@ -9,15 +9,20 @@ public class Ball : MonoBehaviour
     private bool groundTouched = false;
     private Rigidbody rb;
     [SerializeField] private Vector3 cameraOffset = new Vector3(0, -0.4f, 2f);
+    private bool backboardBonusActive = false;
 
     private void OnEnable()
     {
         CameraManager.GamePlayCameraReady += ReturnToStart;
+        GameManager.OnBackboardBonusActivated += OnBackboardBonusActivated;
+        GameManager.OnBackboardBonusExpired += OnBackboardBonusExpired;
     }
 
     private void OnDisable()
     {
         CameraManager.GamePlayCameraReady -= ReturnToStart;
+        GameManager.OnBackboardBonusActivated -= OnBackboardBonusActivated;
+        GameManager.OnBackboardBonusExpired -= OnBackboardBonusExpired;
     }
 
     void Start()
@@ -29,9 +34,20 @@ public class Ball : MonoBehaviour
     {
         if (other.CompareTag("Basket"))
         {
-            if (ringTouched || backboardTouched)
+            if (ringTouched)
             {
                 GameManager.Instance.SetStandardScore();
+            }
+            else if (backboardTouched)
+            {
+                if (backboardBonusActive)
+                {
+                    GameManager.Instance.SetBackboardScore();
+                }
+                else
+                {
+                    GameManager.Instance.SetStandardScore();
+                }
             }
             else
             {
@@ -60,11 +76,12 @@ public class Ball : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Ground"))
         {
+            GameManager.Instance.BallOutOfPlay();
             // al secondo tocco
             if (groundTouched)
             {
                 groundTouched = false;
-                GameManager.Instance.BallOutOfPlay();
+
             }
             else
             {
@@ -83,6 +100,16 @@ public class Ball : MonoBehaviour
         transform.position = cameraTransform.position + cameraTransform.forward * cameraOffset.z + cameraTransform.up * cameraOffset.y + cameraTransform.right * cameraOffset.x;
         ringTouched = false;
         backboardTouched = false;
+    }
+
+    private void OnBackboardBonusActivated(int bonusPoints)
+    {
+        backboardBonusActive = true;
+    }
+
+    private void OnBackboardBonusExpired()
+    {
+        backboardBonusActive = false;
     }
 
 }

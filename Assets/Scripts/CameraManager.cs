@@ -80,6 +80,8 @@ public class CameraManager : Singleton<CameraManager>
 
     private void ChangeCameraGameplay(Transform newTransform)
     {
+        if (GameManager.Instance.GameState != GameState.Gameplay) return;
+
         gameplayCamera.Follow = null;
         gameplayCamera.transform.position = newTransform.position;
         gameplayCamera.transform.rotation = newTransform.rotation;
