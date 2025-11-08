@@ -30,8 +30,9 @@ VisualElement {
     font-size: 45px;
     color: rgb(230, 230, 230);
     text-shadow: 2px 2px 8px rgb(0, 0, 0);
-    -unity-font: initial;
+    -unity-font: url("project://database/Assets/UI%20Toolkit/fonts/Basketball.otf?fileID=12800000&guid=04cf670be63d1e84f9170cf98bbae71c&type=3#Basketball");
     -unity-text-align: upper-center;
+    -unity-font-definition: url("project://database/Assets/UI%20Toolkit/fonts/Basketball%20SDF.asset?fileID=11400000&guid=351d93e633f3e9e46a8304474149a5c9&type=2#Basketball SDF");
 }
 
 .title-text {

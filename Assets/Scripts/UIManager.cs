@@ -15,6 +15,17 @@ public class UIManager : Singleton<UIManager>
     private Button _playAgainButton;
     private Button _returnToMenuButton;
 
+    private VisualElement _inputBarColor;
+    private VisualElement _inputBarPointer;
+    private VisualElement _inputBarPerfectHint;
+    private VisualElement _inputBarBackboardHint;
+
+    [SerializeField] private int maxInputBarPercentagePointer = 97;
+
+    [SerializeField] private int maxInputBarPercentageHint = 90;
+
+
+
 
     public override void Awake()
     {
@@ -36,6 +47,12 @@ public class UIManager : Singleton<UIManager>
         _playButton.clicked += OnPlayButtonClicked;
         _playAgainButton.clicked += OnPlayAgainButtonClicked;
         _returnToMenuButton.clicked += OnReturnToMenuButtonClicked;
+
+        _inputBarColor = root.Q<VisualElement>("input-bar-color");
+        _inputBarPointer = root.Q<VisualElement>("input-bar-pointer");
+
+        _inputBarPerfectHint = root.Q<VisualElement>("input-bar-perfect-hint");
+        _inputBarBackboardHint = root.Q<VisualElement>("input-bar-backboard-hint");
     }
 
     private void OnEnable()
@@ -43,6 +60,10 @@ public class UIManager : Singleton<UIManager>
         GameManager.OnGameStateChanged += HandleGameStateChanged;
         GameManager.OnScoreChanged += HandleScoreChanged;
         GameManager.OnTimerChanged += HandleTimerChanged;
+        BallPhysics.OnShotPowerChanged += HandleShotPowerChanged;
+        GameManager.positionReset += (Transform spawnPoint) => UpdateInputBar(0f);
+        BallPhysics.OnPerfectShotCalculated += UpdatePerfectShotHint;
+        BallPhysics.OnBackboardShotCalculated += UpdateBackboardShotHint;
     }
 
     private void OnDisable()
@@ -50,6 +71,10 @@ public class UIManager : Singleton<UIManager>
         GameManager.OnGameStateChanged -= HandleGameStateChanged;
         GameManager.OnScoreChanged -= HandleScoreChanged;
         GameManager.OnTimerChanged -= HandleTimerChanged;
+        BallPhysics.OnShotPowerChanged -= HandleShotPowerChanged;
+        GameManager.positionReset -= (Transform spawnPoint) => UpdateInputBar(0f);
+        BallPhysics.OnPerfectShotCalculated -= UpdatePerfectShotHint;
+        BallPhysics.OnBackboardShotCalculated -= UpdateBackboardShotHint;
     }
 
     // --- PRIVATE METHODS ---
@@ -83,6 +108,37 @@ public class UIManager : Singleton<UIManager>
         UpdateTimer(newTime);
     }
 
+    private void UpdateInputBar(float normalizedValue)
+    {
+        _inputBarColor.style.scale = new Scale(new Vector3(1, normalizedValue, 1));
+
+        if (normalizedValue <= 0f)
+        {
+            _inputBarPointer.style.display = DisplayStyle.None;
+            return;
+        }
+        else
+        {
+            _inputBarPointer.style.display = DisplayStyle.Flex;
+            float remappedPercentage = Mathf.Lerp(0, maxInputBarPercentagePointer, normalizedValue);
+            _inputBarPointer.style.bottom = Length.Percent(Mathf.Min(remappedPercentage, maxInputBarPercentagePointer));
+        }
+
+    }
+
+    private void UpdatePerfectShotHint(float normalizedValue)
+    {
+        float remappedPercentage = Mathf.Lerp(0, maxInputBarPercentageHint, normalizedValue);
+        _inputBarPerfectHint.style.bottom = Length.Percent(remappedPercentage);
+        Debug.LogWarning($"Perfect shot hint updated to: {remappedPercentage}%");
+    }
+
+    private void UpdateBackboardShotHint(float normalizedValue)
+    {
+        float remappedPercentage = Mathf.Lerp(0, maxInputBarPercentageHint, normalizedValue);
+        _inputBarBackboardHint.style.bottom = Length.Percent(remappedPercentage);
+    }
+
     // --- PUBLIC METHODS ---
 
     public void ShowMainMenu()
@@ -106,12 +162,12 @@ public class UIManager : Singleton<UIManager>
 
     public void UpdateScore(int score)
     {
-        _scoreLabel.text = $"Score\n{score}";
+        _scoreLabel.text = score.ToString();
     }
 
     public void UpdateTimer(float time)
     {
-        _timerLabel.text = $"Time\n{time:F0}";
+        _timerLabel.text = time.ToString();
     }
 
     // --- EVENT HANDLERS ---
@@ -138,5 +194,12 @@ public class UIManager : Singleton<UIManager>
         _mainMenuContainer.style.display = DisplayStyle.None;
         _inGameContainer.style.display = DisplayStyle.None;
         _rewardContainer.style.display = DisplayStyle.None;
+    }
+
+    private void HandleShotPowerChanged(float powerPercentage)
+    {
+        // Converti da 0-100 a 0-1 per la barra
+        float normalizedValue = powerPercentage / 100f;
+        UpdateInputBar(normalizedValue);
     }
 }
