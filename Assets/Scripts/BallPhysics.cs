@@ -13,8 +13,9 @@ public class BallPhysics : MonoBehaviour
     [SerializeField] private Transform basketTransform;
     [SerializeField] private Transform backboardTransform;
     [SerializeField] private Transform backboardMaxTransform;
-    [SerializeField] private float shotAngle = 60f;
-    [SerializeField] private float perfectShotThreshold = 1f;
+    [SerializeField] private float basketShotAngle = 55f; // Angolo più basso per il tiro diretto
+    [SerializeField] private float backboardShotAngle = 70f; // Angolo più alto per il backboard
+    [SerializeField][Range(0f, 100f)] private float perfectShotThreshold = 10f; // Percentuale di errore tollerata
     [SerializeField] private float forceMultiplier = 0.01f;
 
     // Cached values
@@ -61,33 +62,48 @@ public class BallPhysics : MonoBehaviour
         float shotPowerPercentage = CalculateShotPowerPercentage(playerVelocity);
         OnShotPowerChanged?.Invoke(shotPowerPercentage);
 
-        // Calculate errors for both cached trajectories
-        float basketError = Vector3.Distance(playerVelocity, perfectBasketVelocity);
-        float backboardError = Vector3.Distance(playerVelocity, perfectBackboardVelocity);
+        // Calculate errors as percentage difference in magnitude
+        float playerSpeed = playerVelocity.magnitude;
+        float basketErrorPercentage = Mathf.Abs(playerSpeed - perfectSpeed) / perfectSpeed * 100f;
+        float backboardErrorPercentage = Mathf.Abs(playerSpeed - backboardPerfectSpeed) / backboardPerfectSpeed * 100f;
 
-        Debug.Log($"Basket shot error: {basketError}");
-        Debug.Log($"Backboard shot error: {backboardError}");
+        Debug.Log($"Player speed: {playerSpeed:F2} | Perfect basket speed: {perfectSpeed:F2} | Perfect backboard speed: {backboardPerfectSpeed:F2}");
+        Debug.Log($"Basket shot error: {basketErrorPercentage:F1}%");
+        Debug.Log($"Backboard shot error: {backboardErrorPercentage:F1}%");
 
-        // Determine which trajectory to use based on minimum error
+        // Determine which trajectory to use based on percentage error
         Vector3 velocityToUse = playerVelocity;
-        float minError = Mathf.Min(basketError, backboardError);
 
-        if (minError < perfectShotThreshold)
+        bool isBasketPerfect = basketErrorPercentage < perfectShotThreshold;
+        bool isBackboardPerfect = backboardErrorPercentage < perfectShotThreshold;
+
+        if (isBasketPerfect && isBackboardPerfect)
         {
-            if (basketError < backboardError)
+            // Se entrambi sono perfetti, usa quello con errore minore
+            if (basketErrorPercentage < backboardErrorPercentage)
             {
                 velocityToUse = perfectBasketVelocity;
-                Debug.Log("Perfect shot! Using calculated basket velocity.");
+                Debug.Log($"✓ Perfect basket shot! Error: {basketErrorPercentage:F1}%");
             }
             else
             {
                 velocityToUse = perfectBackboardVelocity;
-                Debug.Log("Perfect shot! Using calculated backboard velocity.");
+                Debug.Log($"✓ Perfect backboard shot! Error: {backboardErrorPercentage:F1}%");
             }
+        }
+        else if (isBasketPerfect)
+        {
+            velocityToUse = perfectBasketVelocity;
+            Debug.Log($"✓ Perfect basket shot! Error: {basketErrorPercentage:F1}%");
+        }
+        else if (isBackboardPerfect)
+        {
+            velocityToUse = perfectBackboardVelocity;
+            Debug.Log($"✓ Perfect backboard shot! Error: {backboardErrorPercentage:F1}%");
         }
         else
         {
-            Debug.Log("Imperfect shot. Using player's velocity.");
+            Debug.Log($"✗ Imperfect shot. Basket error: {basketErrorPercentage:F1}%, Backboard error: {backboardErrorPercentage:F1}%");
         }
 
         // Launch the ball with the chosen velocity
@@ -139,10 +155,19 @@ public class BallPhysics : MonoBehaviour
         ballRigidbody.velocity = Vector3.zero;
         ballRigidbody.angularVelocity = Vector3.zero;
         ballRigidbody.AddForce(velocity, ForceMode.Impulse);
+
+        // Add small rotational movement
+        Vector3 randomTorque = new Vector3(
+            UnityEngine.Random.Range(-0.5f, 0.5f),
+            UnityEngine.Random.Range(-0.5f, 0.5f),
+            UnityEngine.Random.Range(-0.5f, 0.5f)
+        ).normalized * 0.3f;
+        ballRigidbody.AddTorque(randomTorque, ForceMode.Impulse);
+
         ballLaunched?.Invoke();
     }
 
-    private void LaunchPerfectTestShot(Vector3 targetPos)
+    /* private void LaunchPerfectTestShot(Vector3 targetPos)
     {
         bool solutionFound;
         Vector3 velocity = PhysicsUtils.CalculatePerfectShotVelocity(
@@ -160,7 +185,7 @@ public class BallPhysics : MonoBehaviour
         {
             Debug.LogWarning("Impossible shot! The target is unreachable at this angle.");
         }
-    }
+    } */
 
     /// <summary>
     /// Calculates and caches perfect shot velocities when the ball position is reset
@@ -172,7 +197,7 @@ public class BallPhysics : MonoBehaviour
         perfectBasketVelocity = PhysicsUtils.CalculatePerfectShotVelocity(
             spawnPoint.position,
             basketTransform.position,
-            shotAngle,
+            basketShotAngle, // Usa angolo specifico per il canestro
             out basketSolutionFound
         );
 
@@ -188,7 +213,7 @@ public class BallPhysics : MonoBehaviour
         perfectBackboardVelocity = PhysicsUtils.CalculatePerfectShotVelocity(
             spawnPoint.position,
             backboardTransform.position,
-            shotAngle,
+            backboardShotAngle, // Usa angolo specifico per il backboard
             out backboardSolutionFound
         );
 
@@ -204,7 +229,7 @@ public class BallPhysics : MonoBehaviour
         Vector3 maxVelocity = PhysicsUtils.CalculatePerfectShotVelocity(
             spawnPoint.position,
             backboardMaxTransform.position,
-            shotAngle,
+            backboardShotAngle, // Usa l'angolo del backboard anche per il max
             out maxBackboardSolutionFound
         );
 

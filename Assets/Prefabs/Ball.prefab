@@ -163,6 +163,7 @@ MonoBehaviour:
   basketTransform: {fileID: 0}
   backboardTransform: {fileID: 0}
   backboardMaxTransform: {fileID: 0}
-  shotAngle: 60
-  perfectShotThreshold: 1
+  basketShotAngle: 50
+  backboardShotAngle: 50
+  perfectShotThreshold: 10
   forceMultiplier: 0.01
