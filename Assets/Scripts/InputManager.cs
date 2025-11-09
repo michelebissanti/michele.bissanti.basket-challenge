@@ -13,6 +13,8 @@ public class InputManager : Singleton<InputManager>
     private bool isDragging = false;
     private Vector2 startDragPosition;
 
+    public Vector2 StartDragPosition => startDragPosition;
+
     public override void Awake()
     {
         base.Awake();

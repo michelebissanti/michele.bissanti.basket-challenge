@@ -164,5 +164,5 @@ MonoBehaviour:
   backboardTransform: {fileID: 0}
   backboardMaxTransform: {fileID: 0}
   shotAngle: 60
-  perfectShotThreshold: 0.5
+  perfectShotThreshold: 1
   forceMultiplier: 0.01

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,8 @@ public class Ball : MonoBehaviour
     private Rigidbody rb;
     [SerializeField] private Vector3 cameraOffset = new Vector3(0, -0.4f, 2f);
     private bool backboardBonusActive = false;
+
+    public static event Action BallOutOfPlay;
 
     private void OnEnable()
     {
@@ -76,7 +79,7 @@ public class Ball : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Ground"))
         {
-            GameManager.Instance.BallOutOfPlay();
+            BallOutOfPlay?.Invoke();
             // al secondo tocco
             if (groundTouched)
             {

@@ -8,13 +8,14 @@ public class BallPhysics : MonoBehaviour
     public static Action<float> OnShotPowerChanged;
     public static event Action<float> OnPerfectShotCalculated;
     public static event Action<float> OnBackboardShotCalculated;
+    public static event Action<float> OnDragPowerUpdated;
 
     [SerializeField] private Transform basketTransform;
     [SerializeField] private Transform backboardTransform;
     [SerializeField] private Transform backboardMaxTransform;
     [SerializeField] private float shotAngle = 60f;
-    [SerializeField] private float perfectShotThreshold = 0.5f;
-    [SerializeField] private float forceMultiplier = 0.02f;
+    [SerializeField] private float perfectShotThreshold = 1f;
+    [SerializeField] private float forceMultiplier = 0.01f;
 
     // Cached values
     private float maxSpeed;
@@ -31,12 +32,14 @@ public class BallPhysics : MonoBehaviour
     private void OnEnable()
     {
         InputManager.OnEndDrag += HandlePlayerShot;
+        InputManager.OnDrag += HandleDragUpdate;
         GameManager.positionReset += CalculateNewVelocityOnReset;
     }
 
     private void OnDisable()
     {
         InputManager.OnEndDrag -= HandlePlayerShot;
+        InputManager.OnDrag -= HandleDragUpdate;
         GameManager.positionReset -= CalculateNewVelocityOnReset;
     }
 
@@ -229,5 +232,23 @@ public class BallPhysics : MonoBehaviour
 
         float percentage = (speed / maxSpeed) * 100f;
         return Mathf.Clamp(percentage, 0f, 100f);
+    }
+
+    private void HandleDragUpdate(Vector2 currentPosition)
+    {
+        if (GameManager.Instance.GameState != GameState.Gameplay)
+        {
+            return;
+        }
+
+        // Calculate drag vector from start position to current
+        Vector2 dragVector = currentPosition - InputManager.Instance.StartDragPosition;
+
+        // Convert to velocity to get power percentage
+        Vector3 previewVelocity = ConvertSwipeToVelocity(dragVector);
+        float dragPowerPercentage = CalculateShotPowerPercentage(previewVelocity);
+
+        // Invoke event for UI update
+        OnDragPowerUpdated?.Invoke(dragPowerPercentage);
     }
 }

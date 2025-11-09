@@ -24,9 +24,6 @@ public class UIManager : Singleton<UIManager>
 
     [SerializeField] private int maxInputBarPercentageHint = 90;
 
-
-
-
     public override void Awake()
     {
         base.Awake();
@@ -53,6 +50,8 @@ public class UIManager : Singleton<UIManager>
 
         _inputBarPerfectHint = root.Q<VisualElement>("input-bar-perfect-hint");
         _inputBarBackboardHint = root.Q<VisualElement>("input-bar-backboard-hint");
+
+
     }
 
     private void OnEnable()
@@ -61,6 +60,7 @@ public class UIManager : Singleton<UIManager>
         GameManager.OnScoreChanged += HandleScoreChanged;
         GameManager.OnTimerChanged += HandleTimerChanged;
         BallPhysics.OnShotPowerChanged += HandleShotPowerChanged;
+        BallPhysics.OnDragPowerUpdated += HandleDragPowerUpdate;
         GameManager.positionReset += (Transform spawnPoint) => UpdateInputBar(0f);
         BallPhysics.OnPerfectShotCalculated += UpdatePerfectShotHint;
         BallPhysics.OnBackboardShotCalculated += UpdateBackboardShotHint;
@@ -72,9 +72,16 @@ public class UIManager : Singleton<UIManager>
         GameManager.OnScoreChanged -= HandleScoreChanged;
         GameManager.OnTimerChanged -= HandleTimerChanged;
         BallPhysics.OnShotPowerChanged -= HandleShotPowerChanged;
+        BallPhysics.OnDragPowerUpdated -= HandleDragPowerUpdate;
         GameManager.positionReset -= (Transform spawnPoint) => UpdateInputBar(0f);
         BallPhysics.OnPerfectShotCalculated -= UpdatePerfectShotHint;
         BallPhysics.OnBackboardShotCalculated -= UpdateBackboardShotHint;
+    }
+
+    void Start()
+    {
+        HideAllScreens();
+        ShowMainMenu();
     }
 
     // --- PRIVATE METHODS ---
@@ -120,17 +127,21 @@ public class UIManager : Singleton<UIManager>
         else
         {
             _inputBarPointer.style.display = DisplayStyle.Flex;
-            float remappedPercentage = Mathf.Lerp(0, maxInputBarPercentagePointer, normalizedValue);
-            _inputBarPointer.style.bottom = Length.Percent(Mathf.Min(remappedPercentage, maxInputBarPercentagePointer));
+            UpdatePointer(normalizedValue);
         }
 
+    }
+
+    private void UpdatePointer(float normalizedValue)
+    {
+        float remappedPercentage = Mathf.Lerp(0, maxInputBarPercentagePointer, normalizedValue);
+        _inputBarPointer.style.bottom = Length.Percent(remappedPercentage);
     }
 
     private void UpdatePerfectShotHint(float normalizedValue)
     {
         float remappedPercentage = Mathf.Lerp(0, maxInputBarPercentageHint, normalizedValue);
         _inputBarPerfectHint.style.bottom = Length.Percent(remappedPercentage);
-        Debug.LogWarning($"Perfect shot hint updated to: {remappedPercentage}%");
     }
 
     private void UpdateBackboardShotHint(float normalizedValue)
@@ -197,6 +208,13 @@ public class UIManager : Singleton<UIManager>
     }
 
     private void HandleShotPowerChanged(float powerPercentage)
+    {
+        // Converti da 0-100 a 0-1 per la barra
+        float normalizedValue = powerPercentage / 100f;
+        UpdateInputBar(normalizedValue);
+    }
+
+    private void HandleDragPowerUpdate(float powerPercentage)
     {
         // Converti da 0-100 a 0-1 per la barra
         float normalizedValue = powerPercentage / 100f;

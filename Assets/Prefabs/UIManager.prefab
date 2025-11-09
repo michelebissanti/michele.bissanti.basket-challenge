@@ -64,6 +64,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 184a66a7681db224f869691a09f26e7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxInputBarPercentagePointer: 95
+  maxInputBarPercentageHint: 91
 --- !u!114 &3724928133806638457
 MonoBehaviour:
   m_ObjectHideFlags: 0

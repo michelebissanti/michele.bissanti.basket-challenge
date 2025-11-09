@@ -59,6 +59,16 @@ public class GameManager : Singleton<GameManager>
 
     private bool scoredPoint = false;
 
+    void OnEnable()
+    {
+        Ball.BallOutOfPlay += OnBallOutOfPlay;
+    }
+
+    void OnDisable()
+    {
+        Ball.BallOutOfPlay -= OnBallOutOfPlay;
+    }
+
     void Start()
     {
         SetState(GameState.MainMenu);
@@ -131,7 +141,7 @@ public class GameManager : Singleton<GameManager>
         nextBackboardBonusTime = gameDuration - UnityEngine.Random.Range(minBackboardBonusSpawnInterval, maxBackboardBonusSpawnInterval);
         StartCoroutine(TimerCountdown());
         SetState(GameState.Gameplay);
-        BallOutOfPlay();
+        OnBallOutOfPlay();
 
     }
 
@@ -194,7 +204,7 @@ public class GameManager : Singleton<GameManager>
         SetState(GameState.Reward);
     }
 
-    public void BallOutOfPlay()
+    public void OnBallOutOfPlay()
     {
         if (scoredPoint)
         {
