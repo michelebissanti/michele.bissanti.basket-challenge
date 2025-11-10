@@ -75,3 +75,22 @@ VisualElement {
 .fireball-progress-bar .unity-text-element {
     color: rgb(255, 255, 255);
 }
+
+.fireball-label {
+    -unity-text-align: middle-center;
+    color: rgb(245, 245, 245);
+    font-size: 22px;
+    -unity-font: url("project://database/Assets/UI%20Toolkit/fonts/Basketball.otf?fileID=12800000&guid=04cf670be63d1e84f9170cf98bbae71c&type=3#Basketball");
+    -unity-font-definition: url("project://database/Assets/UI%20Toolkit/fonts/Basketball%20SDF.asset?fileID=11400000&guid=351d93e633f3e9e46a8304474149a5c9&type=2#Basketball SDF");
+    display: flex;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    -unity-text-outline-color: rgb(241, 19, 32);
+    -unity-text-outline-width: 2px;
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0);
+    background-color: rgba(161, 5, 13, 0.78);
+    padding-right: 0;
+    padding-left: 0;
+    margin-right: 4px;
+    margin-left: 4px;
+}

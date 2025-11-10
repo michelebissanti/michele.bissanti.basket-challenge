@@ -6,8 +6,9 @@ public class BallPhysics : MonoBehaviour
     private Rigidbody ballRigidbody;
     public static Action ballLaunched;
     public static Action<float> OnShotPowerChanged;
-    public static event Action<float> OnPerfectShotCalculated;
-    public static event Action<float> OnBackboardShotCalculated;
+    // Aggiungi PlayerType agli eventi
+    public static event Action<float, PlayerType> OnPerfectShotCalculated;
+    public static event Action<float, PlayerType> OnBackboardShotCalculated;
     public static event Action<float> OnDragPowerUpdated;
 
     [SerializeField] private Transform basketTransform;
@@ -26,6 +27,9 @@ public class BallPhysics : MonoBehaviour
     private Vector3 perfectBackboardVelocity;
 
     private bool canShoot = false;
+
+    [SerializeField] private PlayerType playerType = PlayerType.Human;
+    public PlayerType PlayerType => playerType;
 
     private void Start()
     {
@@ -58,6 +62,12 @@ public class BallPhysics : MonoBehaviour
             return;
         }
 
+        // Only respond if this is the correct ball for the input
+        if (playerType == PlayerType.AI)
+        {
+            return; // AI ball doesn't respond to player input
+        }
+
         canShoot = false;
 
         Vector3 playerVelocity = ConvertSwipeToVelocity(dragVector);
@@ -71,9 +81,9 @@ public class BallPhysics : MonoBehaviour
         float basketErrorPercentage = Mathf.Abs(playerSpeed - perfectSpeed) / perfectSpeed * 100f;
         float backboardErrorPercentage = Mathf.Abs(playerSpeed - backboardPerfectSpeed) / backboardPerfectSpeed * 100f;
 
-        Debug.Log($"Player speed: {playerSpeed:F2} | Perfect basket speed: {perfectSpeed:F2} | Perfect backboard speed: {backboardPerfectSpeed:F2}");
-        Debug.Log($"Basket shot error: {basketErrorPercentage:F1}%");
-        Debug.Log($"Backboard shot error: {backboardErrorPercentage:F1}%");
+        Debug.Log($"[{playerType}] Player speed: {playerSpeed:F2} | Perfect basket speed: {perfectSpeed:F2} | Perfect backboard speed: {backboardPerfectSpeed:F2}");
+        Debug.Log($"[{playerType}] Basket shot error: {basketErrorPercentage:F1}%");
+        Debug.Log($"[{playerType}] Backboard shot error: {backboardErrorPercentage:F1}%");
 
         // Determine which trajectory to use based on percentage error
         Vector3 velocityToUse = playerVelocity;
@@ -87,30 +97,29 @@ public class BallPhysics : MonoBehaviour
             if (basketErrorPercentage < backboardErrorPercentage)
             {
                 velocityToUse = perfectBasketVelocity;
-                Debug.Log($"✓ Perfect basket shot! Error: {basketErrorPercentage:F1}%");
+                Debug.Log($"[{playerType}] ✓ Perfect basket shot! Error: {basketErrorPercentage:F1}%");
             }
             else
             {
                 velocityToUse = perfectBackboardVelocity;
-                Debug.Log($"✓ Perfect backboard shot! Error: {backboardErrorPercentage:F1}%");
+                Debug.Log($"[{playerType}] ✓ Perfect backboard shot! Error: {backboardErrorPercentage:F1}%");
             }
         }
         else if (isBasketPerfect)
         {
             velocityToUse = perfectBasketVelocity;
-            Debug.Log($"✓ Perfect basket shot! Error: {basketErrorPercentage:F1}%");
+            Debug.Log($"[{playerType}] ✓ Perfect basket shot! Error: {basketErrorPercentage:F1}%");
         }
         else if (isBackboardPerfect)
         {
             velocityToUse = perfectBackboardVelocity;
-            Debug.Log($"✓ Perfect backboard shot! Error: {backboardErrorPercentage:F1}%");
+            Debug.Log($"[{playerType}] ✓ Perfect backboard shot! Error: {backboardErrorPercentage:F1}%");
         }
         else
         {
-            Debug.Log($"✗ Imperfect shot. Basket error: {basketErrorPercentage:F1}%, Backboard error: {backboardErrorPercentage:F1}%");
+            Debug.Log($"[{playerType}] Using player velocity (no perfect match)");
         }
 
-        // Launch the ball with the chosen velocity
         LaunchBall(velocityToUse);
     }
 
@@ -155,100 +164,161 @@ public class BallPhysics : MonoBehaviour
     /// </summary>
     private void LaunchBall(Vector3 velocity)
     {
-        ballRigidbody.isKinematic = false;
-        ballRigidbody.velocity = Vector3.zero;
-        ballRigidbody.angularVelocity = Vector3.zero;
-        ballRigidbody.AddForce(velocity, ForceMode.Impulse);
+        // Disable kinematic mode before applying velocity
+        if (ballRigidbody.isKinematic)
+        {
+            ballRigidbody.isKinematic = false;
+            Debug.Log($"[{playerType}] isKinematic disabled for launch");
+        }
 
-        // Add small rotational movement
-        Vector3 randomTorque = new Vector3(
-            UnityEngine.Random.Range(-0.5f, 0.5f),
-            UnityEngine.Random.Range(-0.5f, 0.5f),
-            UnityEngine.Random.Range(-0.5f, 0.5f)
-        ).normalized * 0.3f;
-        ballRigidbody.AddTorque(randomTorque, ForceMode.Impulse);
-
+        ballRigidbody.velocity = velocity;
         ballLaunched?.Invoke();
+        Debug.Log($"[{playerType}] Ball launched with velocity: {velocity}");
     }
-
-    /* private void LaunchPerfectTestShot(Vector3 targetPos)
-    {
-        bool solutionFound;
-        Vector3 velocity = PhysicsUtils.CalculatePerfectShotVelocity(
-            ballRigidbody.position,
-            targetPos,
-            shotAngle,
-            out solutionFound
-        );
-
-        if (solutionFound)
-        {
-            LaunchBall(velocity);
-        }
-        else
-        {
-            Debug.LogWarning("Impossible shot! The target is unreachable at this angle.");
-        }
-    } */
 
     /// <summary>
     /// Calculates and caches perfect shot velocities when the ball position is reset
     /// </summary>
-    private void CalculateNewVelocityOnReset(Transform spawnPoint)
+    private void CalculateNewVelocityOnReset(Transform spawnPoint, PlayerType resetPlayerType)
     {
+        if (resetPlayerType != playerType)
+        {
+            return;
+        }
+
+        Debug.Log($"[{playerType}] CalculateNewVelocityOnReset called");
+
         canShoot = true;
 
-        // Calculate and cache perfect velocity towards the basket
+        // NON modificare isKinematic qui - viene gestito in Ball.cs e LaunchBall
+
+        // Assicurati che le velocità siano azzerate
+        ballRigidbody.velocity = Vector3.zero;
+        ballRigidbody.angularVelocity = Vector3.zero;
+
+        Debug.Log($"[{playerType}] Ball ready to shoot at position: {ballRigidbody.position}, isKinematic: {ballRigidbody.isKinematic}");
+
+        // Calculate perfect basket shot
         bool basketSolutionFound;
         perfectBasketVelocity = PhysicsUtils.CalculatePerfectShotVelocity(
-            spawnPoint.position,
+            ballRigidbody.position,
             basketTransform.position,
-            basketShotAngle, // Usa angolo specifico per il canestro
+            basketShotAngle,
             out basketSolutionFound
         );
 
-        perfectSpeed = basketSolutionFound ? perfectBasketVelocity.magnitude : 0f;
-
         if (!basketSolutionFound)
         {
-            Debug.LogWarning("No solution found for perfect basket shot from current position.");
+            Debug.LogWarning($"[{playerType}] No solution found for basket shot!");
+            return;
         }
 
-        // Calculate and cache perfect velocity towards the backboard
+        perfectSpeed = perfectBasketVelocity.magnitude;
+        float perfectSpeedPercentage = MapSpeedToPercentage(perfectSpeed);
+
+        OnPerfectShotCalculated?.Invoke(perfectSpeedPercentage, playerType);
+        Debug.Log($"[{playerType}] Perfect basket speed: {perfectSpeed:F2} ({perfectSpeedPercentage:F1}%)");
+
+        // Calculate perfect backboard shot
+        Vector3 backboardTargetPos = Vector3.Lerp(
+            backboardTransform.position,
+            backboardMaxTransform.position,
+            0.5f
+        );
+
         bool backboardSolutionFound;
         perfectBackboardVelocity = PhysicsUtils.CalculatePerfectShotVelocity(
-            spawnPoint.position,
-            backboardTransform.position,
-            backboardShotAngle, // Usa angolo specifico per il backboard
+            ballRigidbody.position,
+            backboardTargetPos,
+            backboardShotAngle,
             out backboardSolutionFound
         );
 
-        backboardPerfectSpeed = backboardSolutionFound ? perfectBackboardVelocity.magnitude : 0f;
-
         if (!backboardSolutionFound)
         {
-            Debug.LogWarning("No solution found for perfect backboard shot from current position.");
+            Debug.LogWarning($"[{playerType}] No solution found for backboard shot!");
+            return;
         }
 
-        // Calculate and cache maximum velocity (backboard max shot) for mapping
-        bool maxBackboardSolutionFound;
-        Vector3 maxVelocity = PhysicsUtils.CalculatePerfectShotVelocity(
-            spawnPoint.position,
-            backboardMaxTransform.position,
-            backboardShotAngle, // Usa l'angolo del backboard anche per il max
-            out maxBackboardSolutionFound
-        );
+        backboardPerfectSpeed = perfectBackboardVelocity.magnitude;
+        float backboardSpeedPercentage = MapSpeedToPercentage(backboardPerfectSpeed);
 
-        maxSpeed = maxBackboardSolutionFound ? maxVelocity.magnitude : 20f;
+        OnBackboardShotCalculated?.Invoke(backboardSpeedPercentage, playerType);
+        Debug.Log($"[{playerType}] Perfect backboard speed: {backboardPerfectSpeed:F2} ({backboardSpeedPercentage:F1}%)");
 
-        // Map perfect shot speeds to 0-100 scale and invoke events
-        float perfectShotPercentage = MapSpeedToPercentage(perfectSpeed);
-        float backboardShotPercentage = MapSpeedToPercentage(backboardPerfectSpeed);
+        maxSpeed = Mathf.Max(perfectSpeed, backboardPerfectSpeed) * 1.5f;
+    }
 
-        OnPerfectShotCalculated?.Invoke(perfectShotPercentage / 100f);
-        OnBackboardShotCalculated?.Invoke(backboardShotPercentage / 100f);
+    /// <summary>
+    /// Public method for AI to trigger a shot
+    /// </summary>
+    public void HandleAIShot(Vector2 dragVector)
+    {
+        if (GameManager.Instance.GameState != GameState.Gameplay || !canShoot)
+        {
+            Debug.LogWarning($"[{playerType}] Cannot shoot - GameState: {GameManager.Instance.GameState}, canShoot: {canShoot}");
+            return;
+        }
 
-        Debug.Log($"Perfect basket shot: {perfectShotPercentage:F1}% | Backboard shot: {backboardShotPercentage:F1}%");
+        // Only AI ball should respond to this
+        if (playerType != PlayerType.AI)
+        {
+            return;
+        }
+
+        canShoot = false;
+
+        Vector3 aiVelocity = ConvertSwipeToVelocity(dragVector);
+
+        // Calculate shot power percentage (0-100)
+        float shotPowerPercentage = CalculateShotPowerPercentage(aiVelocity);
+        OnShotPowerChanged?.Invoke(shotPowerPercentage);
+
+        // Calculate errors as percentage difference in magnitude
+        float aiSpeed = aiVelocity.magnitude;
+        float basketErrorPercentage = Mathf.Abs(aiSpeed - perfectSpeed) / perfectSpeed * 100f;
+        float backboardErrorPercentage = Mathf.Abs(aiSpeed - backboardPerfectSpeed) / backboardPerfectSpeed * 100f;
+
+        Debug.Log($"[AI] Player speed: {aiSpeed:F2} | Perfect basket speed: {perfectSpeed:F2} | Perfect backboard speed: {backboardPerfectSpeed:F2}");
+        Debug.Log($"[AI] Basket shot error: {basketErrorPercentage:F1}%");
+        Debug.Log($"[AI] Backboard shot error: {backboardErrorPercentage:F1}%");
+
+        // Determine which trajectory to use based on percentage error
+        Vector3 velocityToUse = aiVelocity;
+
+        bool isBasketPerfect = basketErrorPercentage < perfectShotThreshold;
+        bool isBackboardPerfect = backboardErrorPercentage < perfectShotThreshold;
+
+        if (isBasketPerfect && isBackboardPerfect)
+        {
+            // Se entrambi sono perfetti, usa quello con errore minore
+            if (basketErrorPercentage < backboardErrorPercentage)
+            {
+                velocityToUse = perfectBasketVelocity;
+                Debug.Log($"[AI] ✓ Perfect basket shot! Error: {basketErrorPercentage:F1}%");
+            }
+            else
+            {
+                velocityToUse = perfectBackboardVelocity;
+                Debug.Log($"[AI] ✓ Perfect backboard shot! Error: {backboardErrorPercentage:F1}%");
+            }
+        }
+        else if (isBasketPerfect)
+        {
+            velocityToUse = perfectBasketVelocity;
+            Debug.Log($"[AI] ✓ Perfect basket shot! Error: {basketErrorPercentage:F1}%");
+        }
+        else if (isBackboardPerfect)
+        {
+            velocityToUse = perfectBackboardVelocity;
+            Debug.Log($"[AI] ✓ Perfect backboard shot! Error: {backboardErrorPercentage:F1}%");
+        }
+        else
+        {
+            Debug.Log($"[AI] Using player velocity (no perfect match)");
+        }
+
+        LaunchBall(velocityToUse);
     }
 
     /// <summary>
@@ -258,7 +328,7 @@ public class BallPhysics : MonoBehaviour
     {
         if (maxSpeed <= 0)
         {
-            return 0f;
+            maxSpeed = 10f; // Fallback value
         }
 
         float percentage = (speed / maxSpeed) * 100f;

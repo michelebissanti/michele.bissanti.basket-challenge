@@ -78,8 +78,9 @@ public class CameraManager : Singleton<CameraManager>
         }
     }
 
-    private void ChangeCameraGameplay(Transform newTransform)
+    private void ChangeCameraGameplay(Transform newTransform, PlayerType playerType)
     {
+        if (playerType != PlayerType.Human) return;
         if (GameManager.Instance.GameState != GameState.Gameplay) return;
 
         gameplayCamera.Follow = null;
