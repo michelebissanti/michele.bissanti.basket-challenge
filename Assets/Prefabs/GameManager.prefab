@@ -49,7 +49,7 @@ MonoBehaviour:
   gameDuration: 120
   timer: 120
   playerSpawnPointParent: {fileID: 0}
-  bonusBackboardDuration: 10
+  bonusBackboardDuration: 15
   backboardBonuses:
   - bonusPoints: 4
     spawnPercentage: 60

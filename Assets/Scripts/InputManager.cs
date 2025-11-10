@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,8 +13,16 @@ public class InputManager : Singleton<InputManager>
 
     private bool isDragging = false;
     private Vector2 startDragPosition;
+    private float dragStartTime;
+    private Vector2 lastValidPosition;
 
     public Vector2 StartDragPosition => startDragPosition;
+
+    [SerializeField] private GameObject trail;
+    [SerializeField] private float minimumDistance = 50f;
+    [SerializeField] private float maximumTime = 0.7f;
+
+    private Coroutine trailCoroutine;
 
     public override void Awake()
     {
@@ -24,16 +33,13 @@ public class InputManager : Singleton<InputManager>
     private void OnEnable()
     {
         playerActions.Player.Enable();
-
         playerActions.Player.PrimaryContact.started += OnContactStarted;
-
         playerActions.Player.PrimaryContact.canceled += OnContactCanceled;
     }
 
     private void OnDisable()
     {
         playerActions.Player.Disable();
-
         playerActions.Player.PrimaryContact.started -= OnContactStarted;
         playerActions.Player.PrimaryContact.canceled -= OnContactCanceled;
     }
@@ -41,37 +47,62 @@ public class InputManager : Singleton<InputManager>
     private void OnContactStarted(InputAction.CallbackContext context)
     {
         isDragging = true;
-
-        // Leggi la posizione corrente dall'azione "ContactPosition"
+        dragStartTime = Time.time;
         startDragPosition = playerActions.Player.ContactPosition.ReadValue<Vector2>();
+        lastValidPosition = startDragPosition;
 
-        // Notifica al gioco che il trascinamento è iniziato
         OnStartDrag?.Invoke(startDragPosition);
+
+        trail.SetActive(true);
+        trail.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(startDragPosition.x, startDragPosition.y, 10f));
+        trailCoroutine = StartCoroutine(Trail());
+    }
+
+    private IEnumerator Trail()
+    {
+        while (true)
+        {
+            trail.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(playerActions.Player.ContactPosition.ReadValue<Vector2>().x, playerActions.Player.ContactPosition.ReadValue<Vector2>().y, 10f));
+            yield return null;
+        }
     }
 
     private void OnContactCanceled(InputAction.CallbackContext context)
     {
+        if (!isDragging) return;
+
         isDragging = false;
 
-        // Leggi la posizione finale
-        Vector2 endPosition = playerActions.Player.ContactPosition.ReadValue<Vector2>();
+        trail.SetActive(false);
+        if (trailCoroutine != null)
+        {
+            StopCoroutine(trailCoroutine);
+        }
 
-        // Calcola il vettore di trascinamento finale
-        Vector2 dragVector = endPosition - startDragPosition;
+        Vector2 dragVector = lastValidPosition - startDragPosition;
+        float dragDistance = dragVector.magnitude;
 
-        // Notifica al gioco la fine del trascinamento e il vettore risultante
-        OnEndDrag?.Invoke(dragVector);
+        if (dragDistance >= minimumDistance)
+        {
+            OnEndDrag?.Invoke(dragVector);
+        }
     }
 
     private void Update()
     {
-        // Se non stiamo trascinando, non fare nulla
         if (!isDragging) return;
 
-        // Finché stiamo trascinando, leggi la posizione corrente
         Vector2 currentPosition = playerActions.Player.ContactPosition.ReadValue<Vector2>();
+        float elapsedTime = Time.time - dragStartTime;
 
-        // Notifica la posizione corrente (utile per UI, linee di mira, ecc.)
-        OnDrag?.Invoke(currentPosition);
+        if (elapsedTime <= maximumTime)
+        {
+            lastValidPosition = currentPosition;
+            OnDrag?.Invoke(currentPosition);
+        }
+        else
+        {
+            OnContactCanceled(new InputAction.CallbackContext());
+        }
     }
 }

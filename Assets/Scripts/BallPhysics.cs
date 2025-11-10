@@ -25,6 +25,8 @@ public class BallPhysics : MonoBehaviour
     private Vector3 perfectBasketVelocity;
     private Vector3 perfectBackboardVelocity;
 
+    private bool canShoot = false;
+
     private void Start()
     {
         ballRigidbody = GetComponent<Rigidbody>();
@@ -51,10 +53,12 @@ public class BallPhysics : MonoBehaviour
     /// </summary>
     private void HandlePlayerShot(Vector2 dragVector)
     {
-        if (GameManager.Instance.GameState != GameState.Gameplay)
+        if (GameManager.Instance.GameState != GameState.Gameplay || !canShoot)
         {
             return;
         }
+
+        canShoot = false;
 
         Vector3 playerVelocity = ConvertSwipeToVelocity(dragVector);
 
@@ -192,6 +196,8 @@ public class BallPhysics : MonoBehaviour
     /// </summary>
     private void CalculateNewVelocityOnReset(Transform spawnPoint)
     {
+        canShoot = true;
+
         // Calculate and cache perfect velocity towards the basket
         bool basketSolutionFound;
         perfectBasketVelocity = PhysicsUtils.CalculatePerfectShotVelocity(
@@ -261,7 +267,7 @@ public class BallPhysics : MonoBehaviour
 
     private void HandleDragUpdate(Vector2 currentPosition)
     {
-        if (GameManager.Instance.GameState != GameState.Gameplay)
+        if (GameManager.Instance.GameState != GameState.Gameplay || !canShoot)
         {
             return;
         }
