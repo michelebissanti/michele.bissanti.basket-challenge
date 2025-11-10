@@ -23,6 +23,7 @@ public class InputManager : Singleton<InputManager>
     [SerializeField] private float maximumTime = 0.7f;
 
     private Coroutine trailCoroutine;
+    private bool inGameplay;
 
     public override void Awake()
     {
@@ -35,6 +36,7 @@ public class InputManager : Singleton<InputManager>
         playerActions.Player.Enable();
         playerActions.Player.PrimaryContact.started += OnContactStarted;
         playerActions.Player.PrimaryContact.canceled += OnContactCanceled;
+        GameManager.OnGameStateChanged += HandleGameStateChanged;
     }
 
     private void OnDisable()
@@ -42,6 +44,19 @@ public class InputManager : Singleton<InputManager>
         playerActions.Player.Disable();
         playerActions.Player.PrimaryContact.started -= OnContactStarted;
         playerActions.Player.PrimaryContact.canceled -= OnContactCanceled;
+        GameManager.OnGameStateChanged -= HandleGameStateChanged;
+    }
+
+    private void HandleGameStateChanged(GameState newState)
+    {
+        if (newState == GameState.Gameplay)
+        {
+            inGameplay = true;
+        }
+        else
+        {
+            inGameplay = false;
+        }
     }
 
     private void OnContactStarted(InputAction.CallbackContext context)
@@ -53,9 +68,14 @@ public class InputManager : Singleton<InputManager>
 
         OnStartDrag?.Invoke(startDragPosition);
 
-        trail.SetActive(true);
-        trail.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(startDragPosition.x, startDragPosition.y, 10f));
-        trailCoroutine = StartCoroutine(Trail());
+        if (inGameplay)
+        {
+            trail.SetActive(true);
+            trail.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(startDragPosition.x, startDragPosition.y, 10f));
+            trailCoroutine = StartCoroutine(Trail());
+
+        }
+
     }
 
     private IEnumerator Trail()

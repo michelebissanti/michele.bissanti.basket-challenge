@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.UIElements;
 
 public class UIManager : Singleton<UIManager>
@@ -21,6 +22,8 @@ public class UIManager : Singleton<UIManager>
     private VisualElement _inputBarPerfectHint;
     private VisualElement _inputBarBackboardHint;
 
+    private Label _scoreDifferenceLabel;
+
     [SerializeField] private int maxInputBarPercentagePointer = 97;
 
     [SerializeField] private int maxInputBarPercentageHint = 90;
@@ -29,6 +32,12 @@ public class UIManager : Singleton<UIManager>
     private VisualElement _fireballProgressContainer;
     private Label _fireballProgressLabel;
     private Coroutine fireballTimerCoroutine;
+
+    private int lastScore = 0;
+
+    private PlayableDirector _playableDirector;
+
+    [SerializeField] private PlayableAsset scoreDifferenceAnimation;
 
     public override void Awake()
     {
@@ -60,6 +69,8 @@ public class UIManager : Singleton<UIManager>
         _fireballProgressBar = root.Q<ProgressBar>("fireball-progress-bar");
         _fireballProgressContainer = root.Q<VisualElement>("fireball-progress-container");
         _fireballProgressLabel = root.Q<Label>("fireball-label");
+
+        _scoreDifferenceLabel = root.Q<Label>("score-difference");
 
 
     }
@@ -102,6 +113,8 @@ public class UIManager : Singleton<UIManager>
     {
         HideAllScreens();
         ShowMainMenu();
+
+        _playableDirector = GetComponentInChildren<PlayableDirector>();
     }
 
     // --- FIREBALL UI HANDLERS ---
@@ -190,6 +203,12 @@ public class UIManager : Singleton<UIManager>
     private void HandleScoreChanged(int newScore)
     {
         UpdateScore(newScore);
+
+        int scoreDifference = newScore - lastScore;
+        lastScore = newScore;
+
+        _scoreDifferenceLabel.text = $"+{scoreDifference}";
+        _playableDirector.Play(scoreDifferenceAnimation);
     }
 
     private void HandleTimerChanged(float newTime)

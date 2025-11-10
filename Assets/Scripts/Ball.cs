@@ -37,11 +37,12 @@ public class Ball : MonoBehaviour
     {
         if (other.CompareTag("Basket"))
         {
-            if (ringTouched)
+            if (ringTouched && !backboardTouched)
             {
                 GameManager.Instance.SetStandardScore();
             }
-            else if (backboardTouched)
+
+            if (backboardTouched)
             {
                 if (backboardBonusActive)
                 {
@@ -52,7 +53,8 @@ public class Ball : MonoBehaviour
                     GameManager.Instance.SetStandardScore();
                 }
             }
-            else
+
+            if (!ringTouched && !backboardTouched)
             {
                 GameManager.Instance.SetPerfectScore();
             }
