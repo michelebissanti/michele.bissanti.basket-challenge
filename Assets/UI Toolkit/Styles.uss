@@ -9,9 +9,9 @@ VisualElement {
     border-bottom-left-radius: 24px;
     -unity-text-align: middle-center;
     align-self: center;
-    -unity-font-style: bold;
+    -unity-font-style: normal;
     color: rgb(230, 230, 230);
-    background-color: rgb(240, 80, 0);
+    background-color: rgb(209, 77, 17);
     border-top-width: 4px;
     border-right-width: 4px;
     border-bottom-width: 4px;
@@ -24,6 +24,8 @@ VisualElement {
     padding-right: 16px;
     padding-bottom: 16px;
     padding-left: 16px;
+    -unity-font: url("project://database/Assets/UI%20Toolkit/fonts/Basketball.otf?fileID=12800000&guid=04cf670be63d1e84f9170cf98bbae71c&type=3#Basketball");
+    -unity-font-definition: url("project://database/Assets/UI%20Toolkit/fonts/Basketball%20SDF.asset?fileID=11400000&guid=351d93e633f3e9e46a8304474149a5c9&type=2#Basketball SDF");
 }
 
 .game-hud-text {
