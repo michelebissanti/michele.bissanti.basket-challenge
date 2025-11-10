@@ -29,6 +29,9 @@ public class GameManager : Singleton<GameManager>
     public static event Action<float> OnTimerChanged;
     public static event Action<int> OnBackboardBonusActivated;
     public static event Action OnBackboardBonusExpired;
+    public static event Action<int, int> OnFireballProgressChanged; // Current streak, max baskets needed
+    public static event Action<float> OnFireballModeActivated; // Duration parameter
+    public static event Action OnFireballModeExpired;
 
     [SerializeField] private GameState gameState;
     public GameState GameState => gameState;
@@ -53,11 +56,23 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private float minBackboardBonusSpawnInterval = 15f;
     [SerializeField] private float maxBackboardBonusSpawnInterval = 20f;
 
+    [Header("Fireball Mechanic")]
+    [SerializeField] private int maxBasketsForFireball = 5;
+    public int MaxBasketsForFireball => maxBasketsForFireball;
+    [SerializeField] private float fireballDuration = 15f;
+    public float FireballDuration => fireballDuration;
+
+    private int fireballMultiplier = 2;
+
     private float backboardBonusTimer = 0f;
     private float nextBackboardBonusTime = 0f;
     private int lastBackboardBonusPoints = 0;
 
     private bool scoredPoint = false;
+
+    private int consecutiveBaskets = 0;
+    private bool isFireballModeActive = false;
+    private float fireballModeTimer = 0f;
 
     void OnEnable()
     {
@@ -88,6 +103,12 @@ public class GameManager : Singleton<GameManager>
 
     private void AddScore(int pointsToAdd)
     {
+        // Apply fireball points multiplier
+        if (isFireballModeActive)
+        {
+            pointsToAdd *= fireballMultiplier;
+        }
+
         score += pointsToAdd;
 
         OnScoreChanged?.Invoke(score);
@@ -95,6 +116,7 @@ public class GameManager : Singleton<GameManager>
         if (scoredPoint == false)
         {
             scoredPoint = true;
+            IncrementFireballProgress();
         }
     }
 
@@ -130,6 +152,42 @@ public class GameManager : Singleton<GameManager>
         OnTimerChanged?.Invoke(timer);
     }
 
+    // --- FIREBALL MECHANIC METHODS ---
+
+    private void IncrementFireballProgress()
+    {
+        if (isFireballModeActive) return;
+
+        consecutiveBaskets++;
+        OnFireballProgressChanged?.Invoke(consecutiveBaskets, maxBasketsForFireball);
+
+        if (consecutiveBaskets >= maxBasketsForFireball)
+        {
+            ActivateFireballMode();
+        }
+    }
+
+    private void ResetFireballProgress()
+    {
+        consecutiveBaskets = 0;
+        OnFireballProgressChanged?.Invoke(consecutiveBaskets, maxBasketsForFireball);
+    }
+
+    private void ActivateFireballMode()
+    {
+        isFireballModeActive = true;
+        fireballModeTimer = fireballDuration;
+        consecutiveBaskets = 0;
+        OnFireballModeActivated?.Invoke(fireballDuration);
+    }
+
+    private void DeactivateFireballMode()
+    {
+        isFireballModeActive = false;
+        fireballModeTimer = 0f;
+        OnFireballModeExpired?.Invoke();
+    }
+
     // --- GAME LOGIC METHODS ---
 
     public void StartGame()
@@ -137,6 +195,8 @@ public class GameManager : Singleton<GameManager>
         ResetScore();
         ChangeSpawnPoint();
         StopBackboardBonus();
+        ResetFireballProgress();
+        DeactivateFireballMode();
         SetTimer(gameDuration);
         nextBackboardBonusTime = gameDuration - UnityEngine.Random.Range(minBackboardBonusSpawnInterval, maxBackboardBonusSpawnInterval);
         StartCoroutine(TimerCountdown());
@@ -159,6 +219,16 @@ public class GameManager : Singleton<GameManager>
                 if (backboardBonusTimer <= 0)
                 {
                     StopBackboardBonus();
+                }
+            }
+
+            // Fireball mode timer update
+            if (isFireballModeActive && fireballModeTimer > 0)
+            {
+                fireballModeTimer -= 1f;
+                if (fireballModeTimer <= 0)
+                {
+                    DeactivateFireballMode();
                 }
             }
 
@@ -201,6 +271,7 @@ public class GameManager : Singleton<GameManager>
     public void EndGame()
     {
         StopBackboardBonus();
+        DeactivateFireballMode();
         SetState(GameState.Reward);
     }
 
@@ -210,6 +281,14 @@ public class GameManager : Singleton<GameManager>
         {
             scoredPoint = false;
             ChangeSpawnPoint();
+        }
+        else
+        {
+            // Basket missed - reset fireball progress
+            if (!isFireballModeActive)
+            {
+                ResetFireballProgress();
+            }
         }
 
         positionReset?.Invoke(currentSpawnPoint);

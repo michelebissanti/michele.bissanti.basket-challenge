@@ -15832,9 +15832,9 @@ Transform:
   m_GameObject: {fileID: 6957507291756318034}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.666, z: 0}
-  m_LocalScale: {x: 0.67, y: 0.1072, z: 0.67}
-  m_ConstrainProportionsScale: 1
+  m_LocalPosition: {x: 0, y: -0.511, z: 0}
+  m_LocalScale: {x: 0.936, y: 0.14976, z: 0.936}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 755372241614136051}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -19811,6 +19811,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ring
       objectReference: {fileID: 0}
+    - target: {fileID: 2953424393066365286, guid: 84d9dbb8bc5a5004baf9f6199217db52,
+        type: 3}
+      propertyPath: m_TagString
+      value: Ring
+      objectReference: {fileID: 0}
     - target: {fileID: 3740146555448217522, guid: 84d9dbb8bc5a5004baf9f6199217db52,
         type: 3}
       propertyPath: m_Name
@@ -20154,12 +20159,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: b7404deaa56658743bbef0f0b2f4feca,
         type: 3}
       propertyPath: m_ConstrainProportionsScale
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b7404deaa56658743bbef0f0b2f4feca,
         type: 3}
       propertyPath: m_Name
       value: Net_1mesh
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b7404deaa56658743bbef0f0b2f4feca,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
