@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -23,6 +24,11 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private int maxInputBarPercentagePointer = 97;
 
     [SerializeField] private int maxInputBarPercentageHint = 90;
+
+    private ProgressBar _fireballProgressBar;
+    private VisualElement _fireballProgressContainer;
+    private Label _fireballProgressLabel;
+    private Coroutine fireballTimerCoroutine;
 
     public override void Awake()
     {
@@ -51,6 +57,10 @@ public class UIManager : Singleton<UIManager>
         _inputBarPerfectHint = root.Q<VisualElement>("input-bar-perfect-hint");
         _inputBarBackboardHint = root.Q<VisualElement>("input-bar-backboard-hint");
 
+        _fireballProgressBar = root.Q<ProgressBar>("fireball-progress-bar");
+        _fireballProgressContainer = root.Q<VisualElement>("fireball-progress-container");
+        _fireballProgressLabel = root.Q<Label>("fireball-label");
+
 
     }
 
@@ -64,6 +74,11 @@ public class UIManager : Singleton<UIManager>
         GameManager.positionReset += (Transform spawnPoint) => UpdateInputBar(0f);
         BallPhysics.OnPerfectShotCalculated += UpdatePerfectShotHint;
         BallPhysics.OnBackboardShotCalculated += UpdateBackboardShotHint;
+
+        // Fireball events
+        GameManager.OnFireballProgressChanged += HandleFireballProgressChanged;
+        GameManager.OnFireballModeActivated += HandleFireballModeActivated;
+        GameManager.OnFireballModeExpired += HandleFireballModeExpired;
     }
 
     private void OnDisable()
@@ -76,12 +91,79 @@ public class UIManager : Singleton<UIManager>
         GameManager.positionReset -= (Transform spawnPoint) => UpdateInputBar(0f);
         BallPhysics.OnPerfectShotCalculated -= UpdatePerfectShotHint;
         BallPhysics.OnBackboardShotCalculated -= UpdateBackboardShotHint;
+
+        // Fireball events
+        GameManager.OnFireballProgressChanged -= HandleFireballProgressChanged;
+        GameManager.OnFireballModeActivated -= HandleFireballModeActivated;
+        GameManager.OnFireballModeExpired -= HandleFireballModeExpired;
     }
 
     void Start()
     {
         HideAllScreens();
         ShowMainMenu();
+    }
+
+    // --- FIREBALL UI HANDLERS ---
+
+    private void HandleFireballProgressChanged(int currentBaskets, int maxBaskets)
+    {
+        _fireballProgressBar.value = currentBaskets;
+        _fireballProgressBar.highValue = maxBaskets;
+
+        _fireballProgressBar.title = $"{currentBaskets}/{maxBaskets}";
+    }
+
+    private void HandleFireballModeActivated(float duration)
+    {
+        ShowFireballActiveIndicator();
+        fireballTimerCoroutine = StartCoroutine(FireballTimer(duration));
+    }
+
+    private IEnumerator FireballTimer(float duration)
+    {
+        float timeRemaining = duration;
+
+        while (timeRemaining > 0f)
+        {
+            UpdateFireballTimer(timeRemaining);
+            yield return null;
+            timeRemaining -= Time.deltaTime;
+        }
+
+        UpdateFireballTimer(0f);
+    }
+
+    private void HandleFireballModeExpired()
+    {
+        HideFireballActiveIndicator();
+        if (fireballTimerCoroutine != null)
+        {
+            StopCoroutine(fireballTimerCoroutine);
+            fireballTimerCoroutine = null;
+        }
+
+
+        // Reset progress
+        HandleFireballProgressChanged(0, GameManager.Instance.MaxBasketsForFireball);
+    }
+
+    private void ShowFireballActiveIndicator()
+    {
+        _fireballProgressLabel.text = "FIREBALL ACTIVE!";
+    }
+
+    private void HideFireballActiveIndicator()
+    {
+        _fireballProgressLabel.text = "FIREBALL BONUS";
+    }
+
+    private void UpdateFireballTimer(float timeRemaining)
+    {
+        _fireballProgressBar.value = timeRemaining;
+        _fireballProgressBar.highValue = GameManager.Instance.FireballDuration;
+
+        _fireballProgressBar.title = $"{timeRemaining:F1}s";
     }
 
     // --- PRIVATE METHODS ---
