@@ -59,9 +59,6 @@ public class Ball : MonoBehaviour
     /// <summary>Indicates whether the ball has touched the backboard.</summary>
     private bool backboardTouched = false;
 
-    /// <summary>Indicates whether the ball has touched the ground.</summary>
-    private bool groundTouched = false;
-
     /// <summary>Rigidbody component for physics simulation.</summary>
     private Rigidbody rb;
 
@@ -191,17 +188,9 @@ public class Ball : MonoBehaviour
         // Handle ground collision - ball out of play on second touch
         if (collision.gameObject.CompareTag("Ground"))
         {
+            trailRenderer.enabled = false;
             BallOutOfPlay?.Invoke();
-            // al secondo tocco
-            if (groundTouched)
-            {
-                groundTouched = false;
 
-            }
-            else
-            {
-                groundTouched = true;
-            }
         }
 
     }
