@@ -33,6 +33,11 @@ public class GameManager : Singleton<GameManager>
     public static event Action<float> OnFireballModeActivated; // Duration parameter
     public static event Action OnFireballModeExpired;
 
+    public static event Action OnScoreDone;
+    public static event Action OnPerfectScoreDone;
+    public static event Action OnBackboardScoreDone;
+
+
     [SerializeField] private GameState gameState;
     public GameState GameState => gameState;
 
@@ -130,11 +135,13 @@ public class GameManager : Singleton<GameManager>
     public void SetPerfectScore()
     {
         AddScore(3);
+        OnPerfectScoreDone?.Invoke();
     }
 
     public void SetStandardScore()
     {
         AddScore(2);
+        OnScoreDone?.Invoke();
     }
 
     public void SetBackboardScore()
@@ -142,6 +149,7 @@ public class GameManager : Singleton<GameManager>
         if (lastBackboardBonusPoints > 0)
         {
             AddScore(lastBackboardBonusPoints);
+            OnBackboardScoreDone?.Invoke();
         }
     }
 

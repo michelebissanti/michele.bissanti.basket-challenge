@@ -207,6 +207,8 @@ public class UIManager : Singleton<UIManager>
         int scoreDifference = newScore - lastScore;
         lastScore = newScore;
 
+        if (scoreDifference <= 0) return;
+
         _scoreDifferenceLabel.text = $"+{scoreDifference}";
         _playableDirector.Play(scoreDifferenceAnimation);
     }

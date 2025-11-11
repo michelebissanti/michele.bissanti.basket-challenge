@@ -14,11 +14,29 @@ public class Ball : MonoBehaviour
 
     public static event Action BallOutOfPlay;
 
+    private TrailRenderer trailRenderer;
+    [Header("Trail Settings")]
+    [Header("Normal Trail Settings")]
+    [SerializeField] private Color normalTrailColor = Color.white;
+    [SerializeField] private Material normalTrailMaterial;
+    [SerializeField] private float normalTrailTime;
+    [Header("Fireball Trail Settings")]
+    [SerializeField] private Color fireballTrailStartColor = Color.red;
+    [SerializeField] private Color fireballTrailEndColor = new Color(1f, 0.5f, 0f);
+
+    [SerializeField] private Material fireballTrailMaterial;
+
+    [SerializeField] private float fireballTrailTime;
+
+
     private void OnEnable()
     {
         CameraManager.GamePlayCameraReady += ReturnToStart;
         GameManager.OnBackboardBonusActivated += OnBackboardBonusActivated;
         GameManager.OnBackboardBonusExpired += OnBackboardBonusExpired;
+
+        GameManager.OnFireballModeActivated += SetFireballTrail;
+        GameManager.OnFireballModeExpired += SetNormalTrail;
     }
 
     private void OnDisable()
@@ -26,11 +44,36 @@ public class Ball : MonoBehaviour
         CameraManager.GamePlayCameraReady -= ReturnToStart;
         GameManager.OnBackboardBonusActivated -= OnBackboardBonusActivated;
         GameManager.OnBackboardBonusExpired -= OnBackboardBonusExpired;
+        GameManager.OnFireballModeActivated -= SetFireballTrail;
+        GameManager.OnFireballModeExpired -= SetNormalTrail;
     }
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        trailRenderer = GetComponent<TrailRenderer>();
+    }
+
+    private void SetFireballTrail(float duration)
+    {
+        if (trailRenderer != null)
+        {
+            trailRenderer.material = fireballTrailMaterial;
+            trailRenderer.startColor = fireballTrailStartColor;
+            trailRenderer.endColor = fireballTrailEndColor;
+            trailRenderer.time = fireballTrailTime;
+        }
+    }
+
+    private void SetNormalTrail()
+    {
+        if (trailRenderer != null)
+        {
+            trailRenderer.material = normalTrailMaterial;
+            trailRenderer.startColor = normalTrailColor;
+            trailRenderer.endColor = normalTrailColor;
+            trailRenderer.time = normalTrailTime;
+        }
     }
 
     void OnTriggerEnter(Collider other)
