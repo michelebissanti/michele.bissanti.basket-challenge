@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.Collections;
+using static AudioManager;
 
 public enum GameState
 {
@@ -98,6 +99,7 @@ public class GameManager : Singleton<GameManager>
     void Start()
     {
         SetState(GameState.MainMenu);
+        AudioManager.Instance.ChangeMusic(SoundType.MenuMusic);
 
         playerSpawnPoints = playerSpawnPointParent.GetComponentsInChildren<Transform>();
         playerSpawnPoints = playerSpawnPoints[1..];
@@ -154,12 +156,14 @@ public class GameManager : Singleton<GameManager>
     {
         AddScore(3);
         OnPerfectScoreDone?.Invoke();
+        AudioManager.Instance.Play(SoundType.PerfectScore);
     }
 
     public void SetStandardScore()
     {
         AddScore(2);
         OnScoreDone?.Invoke();
+        AudioManager.Instance.Play(SoundType.Score);
     }
 
     public void SetBackboardScore()
@@ -205,6 +209,7 @@ public class GameManager : Singleton<GameManager>
         fireballModeTimer = fireballDuration;
         consecutiveBaskets = 0;
         OnFireballModeActivated?.Invoke(fireballDuration);
+        AudioManager.Instance.Play(SoundType.OnFireballModeActivated);
     }
 
     private void DeactivateFireballMode()
@@ -228,6 +233,8 @@ public class GameManager : Singleton<GameManager>
         StartCoroutine(TimerCountdown());
         SetState(GameState.Gameplay);
         OnBallOutOfPlay();
+
+        AudioManager.Instance.ChangeMusic(SoundType.GameMusic);
 
     }
 
@@ -283,6 +290,7 @@ public class GameManager : Singleton<GameManager>
                 lastBackboardBonusPoints = bonus.bonusPoints;
                 backboardBonusTimer = bonusBackboardDuration;
                 OnBackboardBonusActivated?.Invoke(bonus.bonusPoints);
+                AudioManager.Instance.Play(SoundType.OnBackboardBonusActivated);
                 break;
             }
         }

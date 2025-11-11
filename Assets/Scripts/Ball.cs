@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AudioManager;
 
 public class Ball : MonoBehaviour
 {
@@ -84,7 +85,7 @@ public class Ball : MonoBehaviour
             hasPassedUpperTrigger = true;
         }
 
-        if (other.CompareTag("BasketLow") && hasPassedUpperTrigger)
+        if (other.CompareTag("BasketLow") && hasPassedUpperTrigger && GameManager.Instance.GameState == GameState.Gameplay)
         {
             if (ringTouched && !backboardTouched)
             {
