@@ -57,5 +57,7 @@ MonoBehaviour:
     spawnPercentage: 30
   - bonusPoints: 8
     spawnPercentage: 10
-  minBackboardBonusSpawnInterval: 15
-  maxBackboardBonusSpawnInterval: 20
+  minBackboardBonusSpawnInterval: 20
+  maxBackboardBonusSpawnInterval: 50
+  maxBasketsForFireball: 5
+  fireballDuration: 15

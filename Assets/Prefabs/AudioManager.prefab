@@ -69,6 +69,14 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: 08226c943302104498b5f5b602ba2b83, type: 3}
     Volume: 0.5
     Source: {fileID: 0}
+  - Type: 7
+    Clip: {fileID: 8300000, guid: 4a581de987b466c489eab4d78df95da3, type: 3}
+    Volume: 0.5
+    Source: {fileID: 0}
+  - Type: 5
+    Clip: {fileID: 8300000, guid: a41e63db761ba624b881806c3ccf5c15, type: 3}
+    Volume: 0.5
+    Source: {fileID: 0}
   _musicMixerGroup: {fileID: 4959707509966947355, guid: 3c6ca27b6cda1824dacf96fc1df781f9,
     type: 2}
   _soundMixerGroup: {fileID: -4130815264956704143, guid: 3c6ca27b6cda1824dacf96fc1df781f9,

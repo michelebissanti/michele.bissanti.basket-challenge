@@ -440,7 +440,7 @@ Transform:
   m_GameObject: {fileID: 159956597017553234}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.3, y: 4, z: -6}
+  m_LocalPosition: {x: 0.3, y: 4, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15681,7 +15681,7 @@ Transform:
   m_GameObject: {fileID: 6854781687763208101}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.305, y: 0.316, z: 0.869}
+  m_LocalPosition: {x: 0.305, y: 0.731, z: 0.869}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19966,17 +19966,27 @@ PrefabInstance:
     - target: {fileID: 4666325511081537371, guid: 84d9dbb8bc5a5004baf9f6199217db52,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4666325511081537371, guid: 84d9dbb8bc5a5004baf9f6199217db52,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4666325511081537371, guid: 84d9dbb8bc5a5004baf9f6199217db52,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.3
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4666325511081537371, guid: 84d9dbb8bc5a5004baf9f6199217db52,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.255
+      objectReference: {fileID: 0}
+    - target: {fileID: 4666325511081537371, guid: 84d9dbb8bc5a5004baf9f6199217db52,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.697
       objectReference: {fileID: 0}
     - target: {fileID: 4666325511081537371, guid: 84d9dbb8bc5a5004baf9f6199217db52,
         type: 3}
@@ -20227,7 +20237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bonusText: {fileID: 6605874108245384735}
   bonusText2: {fileID: 4501941459594251141}
-  bonusColor: {r: 0.3501673, g: 0.44084275, b: 0.9924528, a: 1}
+  bonusColor: {r: 0, g: 0.654902, b: 0.88235295, a: 1}
 --- !u!1001 &7816805455958598142
 PrefabInstance:
   m_ObjectHideFlags: 0
