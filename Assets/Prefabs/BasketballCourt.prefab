@@ -8268,6 +8268,112 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &3664842935897143609
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9127592715744690562}
+  - component: {fileID: 6301098616268120680}
+  - component: {fileID: 3322690009522061157}
+  - component: {fileID: 5519774517279774964}
+  m_Layer: 0
+  m_Name: BasketColliderLow
+  m_TagString: BasketLow
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9127592715744690562
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3664842935897143609}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.543, z: 0}
+  m_LocalScale: {x: 1.17, y: 0.12315788, z: 1.17}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 755372241614136051}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &6301098616268120680
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3664842935897143609}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &3322690009522061157
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3664842935897143609}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &5519774517279774964
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3664842935897143609}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &3689852050294992517
 GameObject:
   m_ObjectHideFlags: 0
@@ -15848,7 +15954,7 @@ GameObject:
   - component: {fileID: 6027879946699768220}
   - component: {fileID: 3813309223976279771}
   m_Layer: 0
-  m_Name: BasketCollider
+  m_Name: BasketColliderUp
   m_TagString: Basket
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15863,7 +15969,7 @@ Transform:
   m_GameObject: {fileID: 6957507291756318034}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.231, z: 0}
+  m_LocalPosition: {x: 0, y: -0.167, z: 0}
   m_LocalScale: {x: 0.936, y: 0.14976, z: 0.936}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19963,6 +20069,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4809212737173675429, guid: 84d9dbb8bc5a5004baf9f6199217db52,
         type: 3}
       insertIndex: -1
+      addedObject: {fileID: 9127592715744690562}
+    - targetCorrespondingSourceObject: {fileID: 4809212737173675429, guid: 84d9dbb8bc5a5004baf9f6199217db52,
+        type: 3}
+      insertIndex: -1
       addedObject: {fileID: 941641454444974415}
     - targetCorrespondingSourceObject: {fileID: 5678790643086839813, guid: 84d9dbb8bc5a5004baf9f6199217db52,
         type: 3}
@@ -20117,7 +20227,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bonusText: {fileID: 6605874108245384735}
   bonusText2: {fileID: 4501941459594251141}
-  bonusColor: {r: 0, g: 0.14285707, b: 1, a: 1}
+  bonusColor: {r: 0.3501673, g: 0.44084275, b: 0.9924528, a: 1}
 --- !u!1001 &7816805455958598142
 PrefabInstance:
   m_ObjectHideFlags: 0

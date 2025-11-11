@@ -9,6 +9,8 @@ TagManager:
   - Ring
   - Backboard
   - Ground
+  - FxTemporaire
+  - BasketLow
   layers:
   - Default
   - TransparentFX

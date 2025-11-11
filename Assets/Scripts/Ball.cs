@@ -28,6 +28,7 @@ public class Ball : MonoBehaviour
 
     [SerializeField] private float fireballTrailTime;
 
+    private bool hasPassedUpperTrigger = false;
 
     private void OnEnable()
     {
@@ -80,6 +81,11 @@ public class Ball : MonoBehaviour
     {
         if (other.CompareTag("Basket"))
         {
+            hasPassedUpperTrigger = true;
+        }
+
+        if (other.CompareTag("BasketLow") && hasPassedUpperTrigger)
+        {
             if (ringTouched && !backboardTouched)
             {
                 GameManager.Instance.SetStandardScore();
@@ -104,7 +110,7 @@ public class Ball : MonoBehaviour
 
             ringTouched = false;
             backboardTouched = false;
-
+            hasPassedUpperTrigger = false;
         }
     }
 
