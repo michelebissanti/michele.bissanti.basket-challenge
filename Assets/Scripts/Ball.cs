@@ -31,6 +31,8 @@ public class Ball : MonoBehaviour
 
     private bool hasPassedUpperTrigger = false;
 
+    public static event Action OnBallReset;
+
     private void OnEnable()
     {
         CameraManager.GamePlayCameraReady += ReturnToStart;
@@ -155,6 +157,7 @@ public class Ball : MonoBehaviour
         transform.position = cameraTransform.position + cameraTransform.forward * cameraOffset.z + cameraTransform.up * cameraOffset.y + cameraTransform.right * cameraOffset.x;
         ringTouched = false;
         backboardTouched = false;
+        OnBallReset?.Invoke();
     }
 
     private void OnBackboardBonusActivated(int bonusPoints)
