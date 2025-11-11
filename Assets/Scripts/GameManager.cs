@@ -37,12 +37,18 @@ public class GameManager : Singleton<GameManager>
     public static event Action OnPerfectScoreDone;
     public static event Action OnBackboardScoreDone;
 
+    public static event Action<int> OnHighScoreChanged;
 
     [SerializeField] private GameState gameState;
     public GameState GameState => gameState;
 
     [SerializeField] private int score = 0;
     public int Score => score;
+
+    private int highScore = 0;
+    public int HighScore => highScore;
+
+    private const string HIGH_SCORE_KEY = "HighScore";
 
     [SerializeField] private float gameDuration = 60f;
     public float GameDuration => gameDuration;
@@ -95,6 +101,8 @@ public class GameManager : Singleton<GameManager>
 
         playerSpawnPoints = playerSpawnPointParent.GetComponentsInChildren<Transform>();
         playerSpawnPoints = playerSpawnPoints[1..];
+
+        LoadHighScore();
     }
 
     public void SetState(GameState newState)
@@ -108,6 +116,8 @@ public class GameManager : Singleton<GameManager>
 
     private void AddScore(int pointsToAdd)
     {
+        if (gameState != GameState.Gameplay) return;
+
         // Apply fireball points multiplier
         if (isFireballModeActive)
         {
@@ -117,6 +127,14 @@ public class GameManager : Singleton<GameManager>
         score += pointsToAdd;
 
         OnScoreChanged?.Invoke(score);
+
+        // Check and update high score
+        if (score > highScore)
+        {
+            highScore = score;
+            SaveHighScore();
+            OnHighScoreChanged?.Invoke(highScore);
+        }
 
         if (scoredPoint == false)
         {
@@ -312,6 +330,26 @@ public class GameManager : Singleton<GameManager>
 
         currentSpawnPoint = newSpawnPoint;
 
+    }
+
+    private void LoadHighScore()
+    {
+        highScore = PlayerPrefs.GetInt(HIGH_SCORE_KEY, 0);
+        OnHighScoreChanged?.Invoke(highScore);
+    }
+
+    private void SaveHighScore()
+    {
+        PlayerPrefs.SetInt(HIGH_SCORE_KEY, highScore);
+        PlayerPrefs.Save();
+    }
+
+    public void ResetHighScore()
+    {
+        highScore = 0;
+        PlayerPrefs.DeleteKey(HIGH_SCORE_KEY);
+        PlayerPrefs.Save();
+        OnHighScoreChanged?.Invoke(highScore);
     }
 
 }

@@ -11,6 +11,7 @@ public class UIManager : Singleton<UIManager>
     private VisualElement _rewardContainer;
 
     private Label _scoreLabel;
+    private Label _highScoreLabel;
     private Label _timerLabel;
     private Label _finalScoreLabel;
     private Button _playButton;
@@ -49,6 +50,7 @@ public class UIManager : Singleton<UIManager>
         _rewardContainer = root.Q<VisualElement>("reward-container");
 
         _scoreLabel = root.Q<Label>("score-label");
+        _highScoreLabel = root.Q<Label>("high-score-label");
         _timerLabel = root.Q<Label>("timer-label");
         _finalScoreLabel = root.Q<Label>("final-score-label");
 
@@ -195,7 +197,7 @@ public class UIManager : Singleton<UIManager>
                 ShowInGameUI();
                 break;
             case GameState.Reward:
-                ShowRewardScreen(GameManager.Instance.Score);
+                ShowRewardScreen(GameManager.Instance.Score, GameManager.Instance.HighScore);
                 break;
         }
     }
@@ -267,10 +269,11 @@ public class UIManager : Singleton<UIManager>
         _inGameContainer.style.display = DisplayStyle.Flex;
     }
 
-    public void ShowRewardScreen(int finalScore)
+    public void ShowRewardScreen(int finalScore, int highScore)
     {
         HideAllScreens();
         _finalScoreLabel.text = $"Final Score: {finalScore}";
+        _highScoreLabel.text = $"High Score: {highScore}";
         _rewardContainer.style.display = DisplayStyle.Flex;
     }
 

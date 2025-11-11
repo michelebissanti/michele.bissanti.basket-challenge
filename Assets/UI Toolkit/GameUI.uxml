@@ -5,7 +5,7 @@
         <ui:Label tabindex="-1" text="Basket Game" parse-escape-sequences="true" display-tooltip-when-elided="true" name="title-label" class="title-text" style="display: none;" />
         <ui:Button text="Play" parse-escape-sequences="true" display-tooltip-when-elided="true" name="play-button" class="main-button" />
     </ui:VisualElement>
-    <ui:VisualElement name="in-game-container" style="flex-grow: 1; flex-wrap: nowrap; display: flex;">
+    <ui:VisualElement name="in-game-container" style="flex-grow: 1; flex-wrap: nowrap; display: none;">
         <ui:VisualElement name="row-in-game" style="flex-grow: 1; flex-direction: row; flex-wrap: nowrap; margin-top: 50px; margin-right: 16px; margin-bottom: 16px; margin-left: 16px; align-items: stretch; justify-content: space-between;">
             <ui:VisualElement name="column" style="flex-grow: 1;">
                 <ui:VisualElement name="flyers-image" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/UI%20Toolkit/ui_textures/flyers_empty.png?fileID=2800000&amp;guid=eb2db9eae424b0b499dc25037f212cb3&amp;type=3#flyers_empty&quot;); -unity-background-scale-mode: scale-to-fit; flex-shrink: 0; flex-direction: column; flex-wrap: nowrap; align-items: flex-start; justify-content: space-between; align-self: flex-start; height: 123px; width: 292px;">
@@ -30,9 +30,13 @@
             <ui:VisualElement name="input-bar-backboard-hint" style="background-image: url(&quot;project://database/Assets/UI%20Toolkit/ui_textures/backboard_hint.png?fileID=21300000&amp;guid=0161f7b8aee9e264a85bafcaa1734c26&amp;type=3#backboard_hint&quot;); -unity-background-scale-mode: scale-to-fit; width: 15px; height: 34px; flex-grow: 0; flex-shrink: 0; bottom: 91%; align-self: center; opacity: 0.75; translate: 0 0; position: absolute;" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="reward-container" style="flex-grow: 1; display: none; align-items: center; justify-content: center; align-self: center;">
-        <ui:Label tabindex="-1" text="Reward Screen" parse-escape-sequences="true" display-tooltip-when-elided="true" name="final-score-label" class="game-hud-text" style="font-size: 80px;" />
-        <ui:Button text="Play again" parse-escape-sequences="true" display-tooltip-when-elided="true" name="play-again-button" class="main-button" />
-        <ui:Button text="Return to menu" parse-escape-sequences="true" display-tooltip-when-elided="true" name="return-to-menu-button" class="main-button" />
+    <ui:VisualElement name="reward-container" style="flex-grow: 1; display: flex; align-items: center; justify-content: center; align-self: center;">
+        <ui:VisualElement name="reward-back" class="background-canvas">
+            <ui:Label tabindex="-1" text="Game over" parse-escape-sequences="true" display-tooltip-when-elided="true" name="game-over-label" class="game-hud-text" style="font-size: 80px;" />
+            <ui:Label tabindex="-1" text="Score: 25" parse-escape-sequences="true" display-tooltip-when-elided="true" name="final-score-label" class="game-hud-text" style="font-size: 65px;" />
+            <ui:Label tabindex="-1" text="High score: 250" parse-escape-sequences="true" display-tooltip-when-elided="true" name="high-score-label" class="game-hud-text" style="font-size: 65px;" />
+            <ui:Button text="Play again" parse-escape-sequences="true" display-tooltip-when-elided="true" name="play-again-button" class="main-button" />
+            <ui:Button text="Return to menu" parse-escape-sequences="true" display-tooltip-when-elided="true" name="return-to-menu-button" class="main-button" />
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

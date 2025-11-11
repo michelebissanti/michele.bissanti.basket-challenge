@@ -75,3 +75,25 @@ VisualElement {
 .fireball-progress-bar .unity-text-element {
     color: rgb(255, 255, 255);
 }
+
+.background-canvas {
+    flex-grow: 0;
+    justify-content: center;
+    background-color: rgba(4, 116, 186, 0.76);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
+    border-bottom-left-radius: 24px;
+    padding-top: 32px;
+    padding-right: 32px;
+    padding-bottom: 32px;
+    padding-left: 32px;
+    border-top-width: 4px;
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 4px;
+    border-left-color: rgb(0, 167, 225);
+    border-right-color: rgb(0, 167, 225);
+    border-top-color: rgb(0, 167, 225);
+    border-bottom-color: rgb(0, 167, 225);
+}
