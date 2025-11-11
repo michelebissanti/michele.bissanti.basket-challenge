@@ -141,8 +141,8 @@ public class VFXManager : Singleton<VFXManager>
             // Instantiate trail at world origin
             instantiatedFireballTrail = Instantiate(fireballTrailPrefab, Vector3.zero, Quaternion.identity);
 
-            // Scale down the trail to 70% of original size
-            instantiatedFireballTrail.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
+            // Scale down the trail to 50% of original size
+            instantiatedFireballTrail.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             instantiatedFireballTrail.name = "FireballTrail";
 
             Debug.Log("Fireball Trail Enabled");

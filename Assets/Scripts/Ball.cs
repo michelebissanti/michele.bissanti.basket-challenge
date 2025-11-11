@@ -128,6 +128,8 @@ public class Ball : MonoBehaviour
         if (other.CompareTag("Basket"))
         {
             hasPassedUpperTrigger = true;
+            // Disable trail to avoid visual artifacts
+            trailRenderer.enabled = false;
         }
 
         // Score detection logic - only triggers when ball passes through lower basket zone
@@ -251,11 +253,14 @@ public class Ball : MonoBehaviour
         Debug.Log("Resetting ball position.");
         rb.isKinematic = true;
 
+
         // place the ball in front of the gameplay camera with an offset
         transform.position = cameraTransform.position + cameraTransform.forward * cameraOffset.z + cameraTransform.up * cameraOffset.y + cameraTransform.right * cameraOffset.x;
         ringTouched = false;
         backboardTouched = false;
         OnBallReset?.Invoke();
+
+        trailRenderer.enabled = true;
     }
 
     /// <summary>
